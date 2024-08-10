@@ -51,11 +51,11 @@ export interface TextProps extends RNTextProps {
  * @param {TextProps} props - The props for the `Text` component.
  * @returns {JSX.Element} The rendered `Text` component.
  */
-export function Text(props: TextProps) {
+export function Text(props: Readonly<TextProps>): JSX.Element {
   const { weight, size, tx, txOptions, text, children, style: $styleOverride, ...rest } = props
 
   const i18nText = tx && translate(tx, txOptions)
-  const content = i18nText || text || children
+  const content = (i18nText ?? text) ?? children
 
   const preset: Presets = props.preset ?? "default"
   const $styles: StyleProp<TextStyle> = [

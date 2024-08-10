@@ -95,7 +95,7 @@ export interface ButtonProps extends PressableProps {
  *   onPress={handleButtonPress}
  * />
  */
-export function Button(props: ButtonProps) {
+export function Button(props: Readonly<ButtonProps>): JSX.Element {
   const {
     tx,
     text,
@@ -123,7 +123,7 @@ export function Button(props: ButtonProps) {
     return [
       $viewPresets[preset],
       $viewStyleOverride,
-      !!pressed && [$pressedViewPresets[preset], $pressedViewStyleOverride],
+      pressed && [$pressedViewPresets[preset], $pressedViewStyleOverride],
       !!disabled && $disabledViewStyleOverride,
     ]
   }
@@ -136,7 +136,7 @@ export function Button(props: ButtonProps) {
     return [
       $textPresets[preset],
       $textStyleOverride,
-      !!pressed && [$pressedTextPresets[preset], $pressedTextStyleOverride],
+      pressed && [$pressedTextPresets[preset], $pressedTextStyleOverride],
       !!disabled && $disabledTextStyleOverride,
     ]
   }

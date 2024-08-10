@@ -59,7 +59,7 @@ export const colors = {
   /**
    * The default color of the screen background.
    */
-  background: palette.neutral200,
+  background: "#292F3F",
   /**
    * The default border color.
    */
@@ -81,4 +81,8 @@ export const colors = {
    *
    */
   errorBackground: palette.angry100,
+
+  primary: "#292F3F",
+
+  primary025: "rgba(41, 47, 63, 0.25)"
 }

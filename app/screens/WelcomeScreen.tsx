@@ -85,6 +85,7 @@ const $bottomContainer: ViewStyle = {
   paddingHorizontal: spacing.lg,
   justifyContent: "space-around",
 }
+
 const $welcomeLogo: ImageStyle = {
   height: 88,
   width: "100%",

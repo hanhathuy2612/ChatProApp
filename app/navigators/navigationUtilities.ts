@@ -48,7 +48,7 @@ export function getActiveRouteName(state: NavigationState | PartialState<Navigat
  * @param {(routeName: string) => boolean} canExit - Function that returns whether we can exit the app.
  * @returns {void}
  */
-export function useBackButtonHandler(canExit: (routeName: string) => boolean) {
+export function useBackButtonHandler(canExit: (routeName: string) => boolean): void {
   // ignore unless android... no back button!
   if (Platform.OS !== "android") return
 
@@ -115,7 +115,7 @@ function navigationRestoredDefaultState(persistNavigation: PersistNavigationConf
  * @param {string} persistenceKey - The key to use for storing the navigation state.
  * @returns {object} - The navigation state and persistence functions.
  */
-export function useNavigationPersistence(storage: Storage, persistenceKey: string) {
+export function useNavigationPersistence(storage: Storage, persistenceKey: string): object {
   const [initialNavigationState, setInitialNavigationState] =
     useState<NavigationProps["initialState"]>()
   const isMounted = useIsMounted()
@@ -160,7 +160,7 @@ export function useNavigationPersistence(storage: Storage, persistenceKey: strin
   }
 
   useEffect(() => {
-    if (!isRestored) restoreState()
+    if (!isRestored) restoreState().then()
   }, [isRestored])
 
   return { onNavigationStateChange, restoreState, isRestored, initialNavigationState }

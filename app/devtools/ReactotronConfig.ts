@@ -23,7 +23,7 @@ const reactotron = Reactotron.configure({
 }).use(
   mst({
     /* ignore some chatty `mobx-state-tree` actions */
-    filter: (event) => /postProcessSnapshot|@APPLY_SNAPSHOT/.test(event.name) === false,
+    filter: (event) => !/postProcessSnapshot|@APPLY_SNAPSHOT/.test(event.name),
   }),
 )
 

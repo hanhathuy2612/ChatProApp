@@ -9,6 +9,12 @@ import {
   SpaceGrotesk_600SemiBold as spaceGroteskSemiBold,
   SpaceGrotesk_700Bold as spaceGroteskBold,
 } from "@expo-google-fonts/space-grotesk"
+// import {
+//   Roboto_400Regular as robotoRegular,
+//   Roboto_500Medium as robotoMedium,
+//   Roboto_700Bold as robotoBold,
+// } from "@expo-google-fonts/roboto"
+
 
 export const customFontsToLoad = {
   spaceGroteskLight,
@@ -17,6 +23,12 @@ export const customFontsToLoad = {
   spaceGroteskSemiBold,
   spaceGroteskBold,
 }
+
+// export const robotoFontsToLoad = {
+//   robotoRegular,
+//   robotoMedium,
+//   robotoBold,
+// }
 
 const fonts = {
   spaceGrotesk: {
@@ -49,6 +61,11 @@ const fonts = {
     // Android only font.
     normal: "monospace",
   },
+  roboto: {
+    normal: "robotoRegular",
+    medium: "robotoMedium",
+    bold: "robotoBold",
+  },
 }
 
 export const typography = {
@@ -65,7 +82,7 @@ export const typography = {
    */
   secondary: Platform.select({ ios: fonts.helveticaNeue, android: fonts.sansSerif }),
   /**
-   * Lets get fancy with a monospace font!
+   * Let's get fancy with a monospace font!
    */
   code: Platform.select({ ios: fonts.courier, android: fonts.monospace }),
 }
