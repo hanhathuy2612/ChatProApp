@@ -84,5 +84,5 @@ export const colors = {
 
   primary: "#292F3F",
 
-  primary025: "rgba(41, 47, 63, 0.25)"
+  primary025: "rgba(0,0,0,0.1)"
 }
