@@ -3,21 +3,33 @@ import { Icon, TextField, TextFieldAccessoryProps } from "app/components"
 import { TextStyle, View, ViewStyle } from "react-native"
 import { colors } from "app/theme"
 
-export const SearchInput = () => {
+export type AppInputProps = {
+  placeholder?: string,
+  icon?: string,
+  multiline?: boolean
+}
+
+export const AppInput = ({
+                           placeholder = "Search...",
+                           icon = "lookup",
+                           multiline = false
+                         }: AppInputProps) => {
   return (
     <TextField
-      placeholder="Search..."
-      RightAccessory={renderIcon}
+      placeholder={placeholder}
+      RightAccessory={(props) => renderIcon(props, icon)}
       style={$searchInput}
       containerStyle={$searchContainer}
       inputWrapperStyle={$searchInputWrapper}
+      multiline={multiline}
+      numberOfLines={1}
     />
   )
 }
 
 const radius = 8
 
-const renderIcon = (props: TextFieldAccessoryProps) => {
+const renderIcon = (props: TextFieldAccessoryProps, icon: any) => {
   const $iconContainer: ViewStyle = {
     width: 40,
     height: 40,
@@ -35,14 +47,14 @@ const renderIcon = (props: TextFieldAccessoryProps) => {
 
   return (
     <View style={$iconContainer}>
-      <Icon icon="lookup" containerStyle={[props.style, $icon]} size={18} />
+      <Icon icon={icon} containerStyle={[props.style, $icon]} size={18} />
     </View>
   )
 }
 
 const $searchContainer: ViewStyle = {
   borderRadius: radius,
-  flex: 1
+  flex: 1,
 }
 
 const $searchInput: TextStyle = {
@@ -54,5 +66,6 @@ const $searchInput: TextStyle = {
 const $searchInputWrapper: ViewStyle = {
   backgroundColor: colors.primary025,
   borderRadius: radius,
-  borderWidth: 0
+  borderWidth: 0,
+  minHeight: "auto"
 }

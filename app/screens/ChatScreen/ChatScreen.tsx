@@ -5,7 +5,7 @@ import { AppStackScreenProps } from "app/navigators"
 import { Button, Screen, Text } from "app/components"
 import { imageRegistry } from "app/theme/images"
 import { colors } from "app/theme"
-import { SearchInput } from "app/screens/ChatScreen/SearchInput"
+import { AppInput } from "app/screens/ChatScreen/AppInput"
 // import { useNavigation } from "@react-navigation/native"
 // import { useStores } from "app/models"
 
@@ -30,7 +30,7 @@ export const ChatScreen: FC<ChatScreenProps> = observer(function ChatScreen(_pro
       </View>
 
       <View style={$searchSection}>
-        <SearchInput />
+        <AppInput />
         <Button style={$plusButton}
                 textStyle={$plusText}
                 text={"+"}
@@ -39,7 +39,9 @@ export const ChatScreen: FC<ChatScreenProps> = observer(function ChatScreen(_pro
 
       <View style={$roomsListContainer}>
         {Array(10).fill("").map((item, index) => (
-          <TouchableOpacity key={`${item}${index}`} onPress={() => goChatRoom(index)}>
+          <TouchableOpacity key={`${item}${index}`}
+                            onPress={() => goChatRoom(index)}
+          >
             <View style={$roomListItem}>
               <Image source={avatarMock} style={$roomImage} />
               <View style={$roomDetails}>

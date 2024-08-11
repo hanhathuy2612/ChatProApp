@@ -109,6 +109,7 @@ export const iconRegistry = {
   view: require("../../assets/icons/view.png"),
   x: require("../../assets/icons/x.png"),
   lookup: require("../../assets/icons/lookup.png"),
+  dialog: require("../../assets/icons/dialog.png"),
 }
 
 const $imageStyleBase: ImageStyle = {
