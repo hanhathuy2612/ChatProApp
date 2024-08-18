@@ -1,35 +1,47 @@
 import React from "react"
 import { Icon, TextField, TextFieldAccessoryProps } from "app/components"
-import { TextStyle, View, ViewStyle } from "react-native"
+import { TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import { colors } from "app/theme"
 
 export type AppInputProps = {
   placeholder?: string,
   icon?: string,
-  multiline?: boolean
+  multiline?: boolean,
+  onSendPress?: (text: string) => void,
 }
 
 export const AppInput = ({
                            placeholder = "Search...",
                            icon = "lookup",
-                           multiline = false
+                           multiline = false,
+                           onSendPress,
                          }: AppInputProps) => {
+
+  const [text, setText] = React.useState<string>("")
+
+  const handleSendPress = () => {
+    onSendPress?.(text);
+    setText('')
+  }
+
   return (
     <TextField
       placeholder={placeholder}
-      RightAccessory={(props) => renderIcon(props, icon)}
+      RightAccessory={(props) => renderIcon(props, icon, handleSendPress)}
       style={$searchInput}
       containerStyle={$searchContainer}
       inputWrapperStyle={$searchInputWrapper}
       multiline={multiline}
       numberOfLines={1}
+      onChangeText={setText}
+      value={text}
     />
   )
 }
 
 const radius = 8
 
-const renderIcon = (props: TextFieldAccessoryProps, icon: any) => {
+const renderIcon = (props: TextFieldAccessoryProps, icon: any, onSendPress: () => void) => {
   const $iconContainer: ViewStyle = {
     width: 40,
     height: 40,
@@ -47,7 +59,12 @@ const renderIcon = (props: TextFieldAccessoryProps, icon: any) => {
 
   return (
     <View style={$iconContainer}>
-      <Icon icon={icon} containerStyle={[props.style, $icon]} size={18} />
+      <TouchableOpacity onPress={() => onSendPress()}>
+        <Icon icon={icon}
+              containerStyle={[props.style, $icon]}
+              size={18}
+        />
+      </TouchableOpacity>
     </View>
   )
 }
@@ -67,5 +84,5 @@ const $searchInputWrapper: ViewStyle = {
   backgroundColor: colors.primary025,
   borderRadius: radius,
   borderWidth: 0,
-  minHeight: "auto"
+  minHeight: "auto",
 }
