@@ -6,6 +6,8 @@ export * from "./DemoDebugScreen"
 export * from "./DemoShowroomScreen/DemoShowroomScreen"
 
 export * from "./ErrorScreen/ErrorBoundary"
-// export other screens hereexport * from "./ChatScreen"
-export * from "./ChatScreen/ChatScreen"
+
+export * from "./ChatScreen/ChatScreenLayout"
 export * from "./ChatScreen/ChatRoomScreen"
+export * from "./ChatScreen/ContactsScreen"
+export * from "./ChatScreen/ChatRoomListScreen"

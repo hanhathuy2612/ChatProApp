@@ -4,9 +4,10 @@ import { TextStyle, View, ViewStyle } from "react-native"
 import { AppStackParamList, AppStackScreenProps } from "app/navigators"
 import { Icon, Screen, Text } from "app/components"
 import { RouteProp, useRoute } from "@react-navigation/native"
-import { AppInput } from "app/screens/ChatScreen/AppInput"
+import { AppInput } from "app/components/AppInput"
 import { ChatMessage } from "app/models/ChatMessage"
 import useWebSocket from "app/hooks/useWebSocket"
+import { chatMessageService } from "app/services/chatMessageService"
 // import { useNavigation } from "@react-navigation/native"
 // import { useStores } from "app/models"
 
@@ -14,11 +15,6 @@ interface ChatRoomScreenProps extends AppStackScreenProps<"ChatRoom"> {
 }
 
 export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoomScreen(_props) {
-  // Pull in one of our MST stores
-  // const { someStore, anotherStore } = useStores()
-
-  // Pull in navigation via hook
-  // const navigation = useNavigation()
 
   const route = useRoute<RouteProp<AppStackParamList, "ChatRoom">>()
   const { roomId } = route.params
@@ -27,19 +23,8 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
     messages,
     sendMessage,
     isConnected,
+    setMessages,
   } = useWebSocket()
-
-  useEffect(() => {
-    if (isConnected) {
-      sendMessage({
-        content: "Hello Server!",
-        type: "JOIN",
-        room: {
-          id: parseInt(roomId),
-        },
-      })
-    }
-  }, [isConnected])
 
   const handleSendPress = (message: string) => {
     const chatMessage: ChatMessage = {
@@ -52,6 +37,33 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
     sendMessage(chatMessage)
   }
 
+  const fetchMessages = () => {
+    chatMessageService.query({ page: 0, size: 20, roomId })
+      .then(
+        res => {
+          console.log("fetchMessages done: ", res.data)
+          setMessages(res.data ?? [])
+        },
+      )
+      .catch(error => {
+        console.log("fetchMessages error: ", error)
+      })
+  }
+
+  useEffect(() => {
+    if (isConnected) {
+      sendMessage({
+        content: "Hello Server!",
+        type: "JOIN",
+        room: {
+          id: parseInt(roomId),
+        },
+      })
+
+      fetchMessages()
+    }
+  }, [isConnected])
+
   return (
     <Screen contentContainerStyle={$rootContentContainer}
             style={$root}
@@ -61,7 +73,7 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
       <View style={$messageContainer}>
         {messages.map(message => (
           <View key={message.content} style={$messageItem}>
-            <Text text={message.content} style={$messageItemText}/>
+            <Text text={message.content} style={$messageItemText} />
           </View>
         ))}
       </View>
@@ -102,14 +114,11 @@ const $messageItem: ViewStyle = {
   justifyContent: "center",
   height: 40,
   borderRadius: 20,
-  paddingHorizontal: 20
-}
-
-const $selfMessageItem: ViewStyle = {
+  paddingHorizontal: 20,
 }
 
 const $messageItemText: TextStyle = {
-  color: "white"
+  color: "white",
 }
 
 const $writeContainer: ViewStyle = {

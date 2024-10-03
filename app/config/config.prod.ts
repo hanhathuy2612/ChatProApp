@@ -7,4 +7,5 @@
  */
 export default {
   API_URL: "CHANGEME",
+  SERVER_HOST: "192.168.1.44",
 }

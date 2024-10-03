@@ -1,5 +1,5 @@
 import React from "react"
-import { Icon, TextField, TextFieldAccessoryProps } from "app/components"
+import { Icon, TextField, TextFieldAccessoryProps } from "app/components/index"
 import { TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import { colors } from "app/theme"
 

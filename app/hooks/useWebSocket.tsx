@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react"
 import { ChatMessage } from "app/models/ChatMessage"
+import config from "app/config"
 
 type UseWebSocketHook = {
   messages: ChatMessage[];
   lastMessage?: ChatMessage;
   sendMessage: (message: ChatMessage) => void;
   isConnected: boolean;
+  setMessages: any;
 };
 
 const useWebSocket = (): UseWebSocketHook => {
@@ -16,7 +18,7 @@ const useWebSocket = (): UseWebSocketHook => {
 
   useEffect(() => {
     if (!ws.current) {
-      ws.current = new WebSocket("ws://192.168.1.39:8080/ws")
+      ws.current = new WebSocket(`ws://${config.SERVER_HOST}:8080/ws`)
 
       ws.current.onopen = (event) => {
         console.log("Connected to WebSocket: ", event)
@@ -48,7 +50,7 @@ const useWebSocket = (): UseWebSocketHook => {
     ws?.current?.send(JSON.stringify(message))
   }
 
-  return { messages, lastMessage, sendMessage, isConnected }
+  return { messages, lastMessage, sendMessage, isConnected, setMessages }
 }
 
 export default useWebSocket

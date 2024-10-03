@@ -15,6 +15,7 @@ import { useStores } from "../models"
 import { DemoTabParamList } from "./DemoNavigator"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
 import { colors } from "app/theme"
+import ChatNavigator, { ChatBottomTabParamList } from "app/navigators/ChatNavigator"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -34,9 +35,10 @@ export type AppStackParamList = {
   Login: undefined
   Demo: NavigatorScreenParams<DemoTabParamList>
   // 🔥 Your screens go here
-  Chat: undefined
+  Chat: NavigatorScreenParams<ChatBottomTabParamList>
   ChatRoom: { roomId: string }
-	// IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
+  Contacts: undefined
+  // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
 
 /**
@@ -69,7 +71,7 @@ const AppStack = observer(function AppStack() {
 
           {/* <Stack.Screen name="Demo" component={DemoNavigator} /> */}
 
-          <Stack.Screen name="Chat" component={Screens.ChatScreen} />
+          <Stack.Screen name="Chat" component={ChatNavigator} />
         </>
       ) : (
         <Stack.Screen name="Login" component={Screens.LoginScreen} />
@@ -77,7 +79,8 @@ const AppStack = observer(function AppStack() {
 
       {/** 🔥 Your screens go here */}
       <Stack.Screen name="ChatRoom" component={Screens.ChatRoomScreen} />
-			{/* IGNITE_GENERATOR_ANCHOR_APP_STACK_SCREENS */}
+      <Stack.Screen name="Contacts" component={Screens.ContactsScreen} />
+      {/* IGNITE_GENERATOR_ANCHOR_APP_STACK_SCREENS */}
     </Stack.Navigator>
   )
 })
