@@ -17,5 +17,7 @@ export type Room = {
 export enum ChatType {
   CHAT = "CHAT",
   JOIN = "JOIN",
-  LEAVE = "LEAVE"
+  LEAVE = "LEAVE",
+  CONNECTED = "CONNECTED",
+  DISCONNECTED = "DISCONNECTED",
 }

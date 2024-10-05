@@ -5,19 +5,40 @@
  * See the [Backend API Integration](https://docs.infinite.red/ignite-cli/boilerplate/app/services/#backend-api-integration)
  * documentation for more details.
  */
-import { ApiResponse, ApisauceInstance, create } from "apisauce"
-import Config from "../../config"
+import { ApiResponse, ApisauceConfig, ApisauceInstance, create } from "apisauce"
+import config from "../../config"
 import { GeneralApiProblem, getGeneralApiProblem } from "./apiProblem"
-import type { ApiConfig, ApiFeedResponse } from "./api.types"
+import type { ApiFeedResponse } from "./api.types"
 import type { EpisodeSnapshotIn } from "app/models/Episode"
+import { _rootStore } from "app/models"
 
 /**
  * Configuring the apisauce instance.
  */
-export const DEFAULT_API_CONFIG: ApiConfig = {
-  url: Config.API_URL,
-  timeout: 10000,
+export const DEFAULT_API_CONFIG: ApisauceConfig = {
+  baseURL: config.API_URL,
+  timeout: 30000,
+  headers: {
+    Accept: "application/json",
+  },
 }
+
+export const defaultApiSauce = create(DEFAULT_API_CONFIG)
+
+defaultApiSauce.axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = _rootStore.authenticationStore.authToken
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+
+    return config
+  },
+  (error) => {
+    return Promise.reject(error)
+  },
+)
 
 /**
  * Manages all requests to the API. You can use this class to build out
@@ -25,20 +46,14 @@ export const DEFAULT_API_CONFIG: ApiConfig = {
  */
 export class Api {
   apisauce: ApisauceInstance
-  config: ApiConfig
+  config: ApisauceConfig
 
   /**
    * Set up our API instance. Keep this lightweight!
    */
-  constructor(config: ApiConfig = DEFAULT_API_CONFIG) {
+  constructor(config: ApisauceConfig = DEFAULT_API_CONFIG) {
     this.config = config
-    this.apisauce = create({
-      baseURL: this.config.url,
-      timeout: this.config.timeout,
-      headers: {
-        Accept: "application/json",
-      },
-    })
+    this.apisauce = defaultApiSauce
   }
 
   /**

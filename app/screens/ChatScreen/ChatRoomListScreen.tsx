@@ -9,6 +9,7 @@ import { ChatScreenLayout } from "app/screens"
 import { Room } from "app/models/ChatMessage"
 import { roomService } from "app/services/roomService"
 import { useFocusEffect } from "@react-navigation/native"
+import useWebSocket from "app/hooks/useWebSocket"
 
 interface ChatRoomListScreenProps extends ChatBottomTabScreenProps<"ChatRooms"> {
 }
@@ -17,6 +18,7 @@ export const ChatRoomListScreen: FC<ChatRoomListScreenProps> = observer(function
   const { avatarMock } = imageRegistry
   const { navigation } = _props
   const [rooms, setRooms] = React.useState<Room[]>([])
+  useWebSocket()
 
   const goChatRoom = (item: any): void => {
     navigation.navigate("ChatRoom", { roomId: item, title: "Huy Ha" })

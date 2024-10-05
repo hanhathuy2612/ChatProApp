@@ -1,5 +1,6 @@
 import { Api } from "app/services/api"
 import { ApiResponse } from "apisauce"
+import { AppUser } from "app/models/User"
 
 export type LoginRequest = {
   username: string,
@@ -32,8 +33,12 @@ class AccountService extends Api {
     return this.apisauce.post(`api/account`, req)
   }
 
-  getContacts() {
-    return this.apisauce.get(`api/account/contacts`)
+  getContacts(): Promise<ApiResponse<AppUser[]>> {
+    return this.apisauce.get<AppUser[]>(`api/account/contacts`)
+  }
+
+  fetchAccount(): Promise<ApiResponse<AppUser>> {
+    return this.apisauce.get<AppUser>(`api/account`)
   }
 }
 

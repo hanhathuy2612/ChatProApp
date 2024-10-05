@@ -20,6 +20,7 @@ export const AuthenticationStoreModel = types
   }))
   .views((store) => ({
     get isAuthenticated() {
+      console.log("store.authEmail: ", store.authEmail)
       return !!store.authToken
     },
     get validationError() {
