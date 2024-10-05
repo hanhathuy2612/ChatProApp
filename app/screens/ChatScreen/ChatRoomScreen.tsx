@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from "react"
+import React, { FC, useEffect, useState } from "react"
 import { observer } from "mobx-react-lite"
 import { TextStyle, View, ViewStyle } from "react-native"
 import { AppStackParamList, AppStackScreenProps } from "app/navigators"
@@ -8,27 +8,39 @@ import { AppInput } from "app/components/AppInput"
 import { ChatMessage } from "app/models/ChatMessage"
 import useWebSocket from "app/hooks/useWebSocket"
 import { chatMessageService } from "app/services/chatMessageService"
-// import { useNavigation } from "@react-navigation/native"
-// import { useStores } from "app/models"
+import { useHeader } from "app/utils/useHeader"
 
 interface ChatRoomScreenProps extends AppStackScreenProps<"ChatRoom"> {
 }
 
 export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoomScreen(_props) {
-
+  const { navigation } = _props
   const route = useRoute<RouteProp<AppStackParamList, "ChatRoom">>()
-  const { roomId } = route.params
+  const { roomId, title } = route.params
+
+  useHeader(
+    {
+      title: title ?? "ChatRoom",
+      leftIcon: "back",
+      onLeftPress: () => navigation.navigate("Chat", { screen: "ChatRooms" }),
+    },
+    [roomId],
+  )
 
   const {
-    messages,
+    lastMessage,
     sendMessage,
     isConnected,
-    setMessages,
   } = useWebSocket()
 
+  const [messages, setMessages] = useState<ChatMessage[]>([])
+
   const handleSendPress = (message: string) => {
+    if (!message) {
+      return
+    }
     const chatMessage: ChatMessage = {
-      content: message,
+      content: message.trim(),
       type: "CHAT",
       room: {
         id: parseInt(roomId),
@@ -63,6 +75,16 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
       fetchMessages()
     }
   }, [isConnected])
+
+  useEffect(() => {
+    if (!lastMessage) {
+      return
+    }
+
+    if (!messages.some(message => message.id === lastMessage?.id)) {
+      setMessages([...messages, lastMessage])
+    }
+  }, [lastMessage])
 
   return (
     <Screen contentContainerStyle={$rootContentContainer}
@@ -105,6 +127,7 @@ const $messageContainer: ViewStyle = {
   flex: 1,
   flexBasis: "auto",
   justifyContent: "flex-end",
+  gap: 10,
 }
 
 const $messageItem: ViewStyle = {

@@ -23,12 +23,12 @@ const useWebSocket = (): UseWebSocketHook => {
       ws.current.onopen = (event) => {
         console.log("Connected to WebSocket: ", event)
         setIsConnected(true)
-        // ws?.current?.send(JSON.stringify({ content: "Hello, Server!" }))
       }
 
       ws.current.onmessage = (event) => {
         console.log("Received:", event.data)
         setLastMessage(JSON.parse(event.data))
+        console.log("All messages: ", [...messages, JSON.parse(event.data)].length)
         setMessages([...messages, JSON.parse(event.data)])
       }
 

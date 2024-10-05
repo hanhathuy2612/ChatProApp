@@ -36,8 +36,8 @@ export type AppStackParamList = {
   Demo: NavigatorScreenParams<DemoTabParamList>
   // 🔥 Your screens go here
   Chat: NavigatorScreenParams<ChatBottomTabParamList>
-  ChatRoom: { roomId: string }
-  Contacts: undefined
+  ChatRoom: { roomId: string, title?: string }
+  SignUp: undefined
   // IGNITE_GENERATOR_ANCHOR_APP_STACK_PARAM_LIST
 }
 
@@ -72,14 +72,17 @@ const AppStack = observer(function AppStack() {
           {/* <Stack.Screen name="Demo" component={DemoNavigator} /> */}
 
           <Stack.Screen name="Chat" component={ChatNavigator} />
+          <Stack.Screen name="ChatRoom" component={Screens.ChatRoomScreen} options={{
+            headerShown: true,
+          }} />
         </>
       ) : (
-        <Stack.Screen name="Login" component={Screens.LoginScreen} />
+        <>
+          <Stack.Screen name="Login" component={Screens.LoginScreen} />
+          <Stack.Screen name="SignUp" component={Screens.SignUpScreen} />
+        </>
       )}
 
-      {/** 🔥 Your screens go here */}
-      <Stack.Screen name="ChatRoom" component={Screens.ChatRoomScreen} />
-      <Stack.Screen name="Contacts" component={Screens.ContactsScreen} />
       {/* IGNITE_GENERATOR_ANCHOR_APP_STACK_SCREENS */}
     </Stack.Navigator>
   )

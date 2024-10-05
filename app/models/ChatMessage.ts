@@ -11,6 +11,7 @@ export type ChatMessage = {
 export type Room = {
   id: number;
   name?: string;
+  imageUrl?: string;
 };
 
 export enum ChatType {

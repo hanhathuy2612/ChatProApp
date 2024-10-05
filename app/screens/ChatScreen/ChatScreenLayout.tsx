@@ -1,22 +1,34 @@
 import React, { FC } from "react"
 import { observer } from "mobx-react-lite"
-import { Image, ImageStyle, TextStyle, View, ViewProps, ViewStyle } from "react-native"
-import { Button, Screen, Text } from "app/components"
+import { Image, ImageStyle, TextStyle, TouchableOpacity, View, ViewProps, ViewStyle } from "react-native"
+import { Button, Icon, Screen, Text } from "app/components"
 import { imageRegistry } from "app/theme/images"
 import { colors } from "app/theme"
 import { AppInput } from "app/components/AppInput"
+import { useStores } from "app/models"
 
 type ChatLayoutProps = ViewProps;
 
 export const ChatScreenLayout: FC<ChatLayoutProps> = observer(function ChatScreen(_props) {
   const { children, ...props } = _props
   const { avatarMock } = imageRegistry
+  const { authenticationStore } = useStores()
+
+  const handleLogoutClick = () => {
+    authenticationStore.logout()
+  }
 
   return (
     <Screen style={$root} preset="scroll" safeAreaEdges={["top", "bottom"]} {...props}>
       <View style={$header}>
-        <Image source={avatarMock} style={$avatar} />
-        <Text text="Huy Ha" style={$headerText} />
+        <View style={$accountInfo}>
+          <Image source={avatarMock} style={$avatar} />
+          <Text text="Huy Ha" style={$headerText} />
+        </View>
+
+        <TouchableOpacity onPress={handleLogoutClick}>
+          <Icon icon="bracketRight" size={30} color="white" />
+        </TouchableOpacity>
       </View>
 
       <View style={$searchSection}>
@@ -44,8 +56,7 @@ const $header: ViewStyle = {
   width: "100%",
   flexDirection: "row",
   alignItems: "center",
-  justifyContent: "flex-start",
-  gap: 15,
+  justifyContent: "space-between",
   paddingLeft: 10,
   paddingTop: 10,
   marginBottom: 10,
@@ -82,4 +93,11 @@ const $plusButton: ViewStyle = {
 const $plusText: TextStyle = {
   color: colors.palette.neutral100,
   fontSize: 20,
+}
+
+const $accountInfo: ViewStyle = {
+  display: "flex",
+  flexDirection: "row",
+  alignItems: "center",
+  gap: 10,
 }

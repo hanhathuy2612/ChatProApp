@@ -41,6 +41,18 @@ const en = {
     tapToSignIn: "Tap to sign in!",
     hint: "Hint: you can use any email address and your favorite password :)",
   },
+  signupScreen: {
+    emailFieldPlaceholder: "Enter your email address",
+    passwordFieldPlaceholder: "Super secret password here",
+    rePasswordFieldPlaceholder: "Repeat password password here",
+    firstNameFieldPlaceholder: "Enter your first name",
+    lastNameFieldPlaceholder: "Enter your last name",
+    emailFieldLabel: "Email",
+    passwordFieldLabel: "Password",
+    rePasswordFieldLabel: "Repeat Password",
+    firstNameFieldLabel: "First Name",
+    lastNameFieldLabel: "Last Name",
+  },
   demoNavigator: {
     componentsTab: "Components",
     debugTab: "Debug",

@@ -1,11 +1,14 @@
 import { ChatBottomTabScreenProps } from "app/navigators/ChatNavigator"
-import React, { FC } from "react"
+import React, { FC, useCallback } from "react"
 import { observer } from "mobx-react-lite"
 import { Text } from "app/components"
 import { Image, ImageStyle, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import { colors } from "app/theme"
 import { imageRegistry } from "app/theme/images"
 import { ChatScreenLayout } from "app/screens"
+import { Room } from "app/models/ChatMessage"
+import { roomService } from "app/services/roomService"
+import { useFocusEffect } from "@react-navigation/native"
 
 interface ChatRoomListScreenProps extends ChatBottomTabScreenProps<"ChatRooms"> {
 }
@@ -13,22 +16,40 @@ interface ChatRoomListScreenProps extends ChatBottomTabScreenProps<"ChatRooms"> 
 export const ChatRoomListScreen: FC<ChatRoomListScreenProps> = observer(function ChatRoomListScreen(_props) {
   const { avatarMock } = imageRegistry
   const { navigation } = _props
+  const [rooms, setRooms] = React.useState<Room[]>([])
 
   const goChatRoom = (item: any): void => {
-    navigation.navigate("ChatRoom", { roomId: item })
+    navigation.navigate("ChatRoom", { roomId: item, title: "Huy Ha" })
   }
+
+  const fetchRooms = () => {
+    console.log("fetch rooms")
+    roomService.query({ page: 0, size: 20 })
+      .then(res => {
+        setRooms(res.data ?? [])
+      })
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchRooms()
+      return () => {
+        console.log('Screen is unfocused');
+      };
+    }, [])
+  )
 
   return (
     <ChatScreenLayout>
       <View style={$roomsListContainer}>
-        {Array(10).fill("").map((item, index) => (
+        {rooms.length > 0 && rooms.map((item, index) => (
           <TouchableOpacity key={`${item}${index}`}
                             onPress={() => goChatRoom(index)}
           >
             <View style={$roomListItem}>
               <Image source={avatarMock} style={$roomImage} />
               <View style={$roomDetails}>
-                <Text style={$roomName}>Maciej Kowalski</Text>
+                <Text style={$roomName}>{item.name}</Text>
                 <Text style={$latestMessage}>Will do, super, thank you</Text>
               </View>
             </View>

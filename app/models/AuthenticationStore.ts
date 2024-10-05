@@ -1,4 +1,6 @@
 import { Instance, SnapshotOut, types } from "mobx-state-tree"
+import { accountService, LoginRequest } from "app/services/accountService"
+import { withSetPropAction } from "app/models/helpers/withSetPropAction"
 
 export const AuthenticationStoreModel = types
   .model("AuthenticationStore")
@@ -6,6 +8,16 @@ export const AuthenticationStoreModel = types
     authToken: types.maybe(types.string),
     authEmail: "",
   })
+  .actions(withSetPropAction)
+  .actions((store) => ({
+    async login(request: LoginRequest) {
+      const response = await accountService.login(request)
+      if (response.status === 200) {
+        store.setProp('authToken', response.data?.id_token)
+        store.setProp('authEmail', request.username)
+      }
+    },
+  }))
   .views((store) => ({
     get isAuthenticated() {
       return !!store.authToken
@@ -31,5 +43,8 @@ export const AuthenticationStoreModel = types
     },
   }))
 
-export interface AuthenticationStore extends Instance<typeof AuthenticationStoreModel> {}
-export interface AuthenticationStoreSnapshot extends SnapshotOut<typeof AuthenticationStoreModel> {}
+export interface AuthenticationStore extends Instance<typeof AuthenticationStoreModel> {
+}
+
+export interface AuthenticationStoreSnapshot extends SnapshotOut<typeof AuthenticationStoreModel> {
+}
