@@ -9,7 +9,7 @@ import { ChatScreenLayout } from "app/screens"
 import { Room } from "app/models/ChatMessage"
 import { roomService } from "app/services/roomService"
 import { useFocusEffect } from "@react-navigation/native"
-import useWebSocket from "app/hooks/useWebSocket"
+import useSockJs from "app/hooks/useSockJS"
 
 interface ChatRoomListScreenProps extends ChatBottomTabScreenProps<"ChatRooms"> {
 }
@@ -18,7 +18,7 @@ export const ChatRoomListScreen: FC<ChatRoomListScreenProps> = observer(function
   const { avatarMock } = imageRegistry
   const { navigation } = _props
   const [rooms, setRooms] = React.useState<Room[]>([])
-  useWebSocket()
+  useSockJs()
 
   const goChatRoom = (item: Room): void => {
     navigation.navigate("ChatRoom", { roomId: item.id.toString(), title: item.name })
@@ -36,9 +36,9 @@ export const ChatRoomListScreen: FC<ChatRoomListScreenProps> = observer(function
     useCallback(() => {
       fetchRooms()
       return () => {
-        console.log('Screen is unfocused');
-      };
-    }, [])
+        console.log("Screen is unfocused")
+      }
+    }, []),
   )
 
   return (

@@ -6,10 +6,10 @@ import { Icon, Screen, Text } from "app/components"
 import { RouteProp, useRoute } from "@react-navigation/native"
 import { AppInput } from "app/components/AppInput"
 import { ChatMessage } from "app/models/ChatMessage"
-import useWebSocket from "app/hooks/useWebSocket"
 import { chatMessageService } from "app/services/chatMessageService"
 import { useHeader } from "app/utils/useHeader"
 import { useStores } from "app/models"
+import useSockJs from "app/hooks/useSockJS"
 
 interface ChatRoomScreenProps extends AppStackScreenProps<"ChatRoom"> {
 }
@@ -34,7 +34,7 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
     lastMessage,
     sendMessage,
     isConnected,
-  } = useWebSocket()
+  } = useSockJs()
 
   const [messages, setMessages] = useState<ChatMessage[]>([])
 

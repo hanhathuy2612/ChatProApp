@@ -40,6 +40,7 @@
     "@shopify/flash-list": "^1.6.4",
     "@stomp/stompjs": "^7.0.0",
     "apisauce": "3.0.1",
+    "buffer": "^6.0.3",
     "date-fns": "^2.30.0",
     "expo": "~51.0.8",
     "expo-application": "~5.9.1",
@@ -68,6 +69,7 @@
     "react-native-screens": "3.31.1",
     "react-native-web": "~0.19.6",
     "sockjs-client": "^1.6.1",
+    "text-encoding": "^0.7.0",
     "ws": "^8.18.0"
   },
   "devDependencies": {
@@ -86,6 +88,8 @@
     "@types/lodash": "^4.17.10",
     "@types/react": "~18.2.14",
     "@types/react-test-renderer": "^18.0.0",
+    "@types/sockjs-client": "^1.5.4",
+    "@types/text-encoding": "^0.0.39",
     "@types/ws": "^8.5.12",
     "@typescript-eslint/eslint-plugin": "^5.59.0",
     "@typescript-eslint/parser": "^5.59.0",
