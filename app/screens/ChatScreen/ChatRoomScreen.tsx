@@ -9,6 +9,7 @@ import { ChatMessage } from "app/models/ChatMessage"
 import useWebSocket from "app/hooks/useWebSocket"
 import { chatMessageService } from "app/services/chatMessageService"
 import { useHeader } from "app/utils/useHeader"
+import { useStores } from "app/models"
 
 interface ChatRoomScreenProps extends AppStackScreenProps<"ChatRoom"> {
 }
@@ -17,6 +18,8 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
   const { navigation } = _props
   const route = useRoute<RouteProp<AppStackParamList, "ChatRoom">>()
   const { roomId, title } = route.params
+
+  const { accountStore: { id: accountId } } = useStores()
 
   useHeader(
     {
@@ -45,6 +48,9 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
       room: {
         id: parseInt(roomId),
       },
+      sender: {
+        id: accountId ?? undefined,
+      },
     }
     sendMessage(chatMessage)
   }
@@ -53,7 +59,6 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
     chatMessageService.query({ page: 0, size: 20, roomId })
       .then(
         res => {
-          console.log("fetchMessages done: ", res.data)
           setMessages(res.data ?? [])
         },
       )
@@ -64,14 +69,6 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
 
   useEffect(() => {
     if (isConnected) {
-      sendMessage({
-        content: "Hello Server!",
-        type: "JOIN",
-        room: {
-          id: parseInt(roomId),
-        },
-      })
-
       fetchMessages()
     }
   }, [isConnected])
@@ -94,7 +91,7 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
     >
       <View style={$messageContainer}>
         {messages.map(message => (
-          <View key={message.content} style={$messageItem}>
+          <View key={message.id} style={[$messageItem, message.sender?.id === accountId && $selfMessage]}>
             <Text text={message.content} style={$messageItemText} />
           </View>
         ))}
@@ -147,4 +144,8 @@ const $messageItemText: TextStyle = {
 const $writeContainer: ViewStyle = {
   flexDirection: "row",
   gap: 15,
+}
+
+const $selfMessage: ViewStyle = {
+  alignSelf: "flex-end",
 }

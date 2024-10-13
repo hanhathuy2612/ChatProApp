@@ -1,5 +1,5 @@
 import { Api } from "app/services/api"
-import { Room } from "app/models/ChatMessage"
+import { NewRoom, Room } from "app/models/ChatMessage"
 import { ApiResponse } from "apisauce"
 import { omit } from "lodash"
 
@@ -8,8 +8,8 @@ class RoomService extends Api {
     return this.apisauce.get<Room[]>(`api/rooms`, req)
   }
 
-  create(req?: any): Promise<ApiResponse<Room>> {
-    return this.apisauce.post<Room>(`api/rooms`, req)
+  create(room: NewRoom): Promise<ApiResponse<Room>> {
+    return this.apisauce.post<Room>(`api/rooms`, room)
   }
 
   getMessagesInRoom(req: any) {

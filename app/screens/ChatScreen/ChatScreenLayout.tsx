@@ -12,7 +12,7 @@ type ChatLayoutProps = ViewProps;
 export const ChatScreenLayout: FC<ChatLayoutProps> = observer(function ChatScreen(_props) {
   const { children, ...props } = _props
   const { avatarMock } = imageRegistry
-  const { authenticationStore } = useStores()
+  const { authenticationStore, accountStore: account } = useStores()
 
   const handleLogoutClick = () => {
     authenticationStore.logout()
@@ -23,7 +23,7 @@ export const ChatScreenLayout: FC<ChatLayoutProps> = observer(function ChatScree
       <View style={$header}>
         <View style={$accountInfo}>
           <Image source={avatarMock} style={$avatar} />
-          <Text text="Huy Ha" style={$headerText} />
+          <Text text={`${account.firstName} ${account.lastName}`} style={$headerText} />
         </View>
 
         <TouchableOpacity onPress={handleLogoutClick}>

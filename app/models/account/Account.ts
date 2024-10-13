@@ -20,6 +20,7 @@ export const AccountModel = types
       accountService.fetchAccount().then(
         res => {
           if (res.status === 200) {
+            console.log("account info: ", res.data)
             const account = res.data
             store.setProp("id", account?.id)
             store.setProp("email", account?.email)

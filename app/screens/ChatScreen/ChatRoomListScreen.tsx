@@ -20,8 +20,8 @@ export const ChatRoomListScreen: FC<ChatRoomListScreenProps> = observer(function
   const [rooms, setRooms] = React.useState<Room[]>([])
   useWebSocket()
 
-  const goChatRoom = (item: any): void => {
-    navigation.navigate("ChatRoom", { roomId: item, title: "Huy Ha" })
+  const goChatRoom = (item: Room): void => {
+    navigation.navigate("ChatRoom", { roomId: item.id.toString(), title: item.name })
   }
 
   const fetchRooms = () => {
@@ -46,13 +46,13 @@ export const ChatRoomListScreen: FC<ChatRoomListScreenProps> = observer(function
       <View style={$roomsListContainer}>
         {rooms.length > 0 && rooms.map((item, index) => (
           <TouchableOpacity key={`${item}${index}`}
-                            onPress={() => goChatRoom(index)}
+                            onPress={() => goChatRoom(item)}
           >
             <View style={$roomListItem}>
               <Image source={avatarMock} style={$roomImage} />
               <View style={$roomDetails}>
                 <Text style={$roomName}>{item.name}</Text>
-                <Text style={$latestMessage}>Will do, super, thank you</Text>
+                <Text style={$latestMessage}>{item.lastMessage?.content}</Text>
               </View>
             </View>
           </TouchableOpacity>

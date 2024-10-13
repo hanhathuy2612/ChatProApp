@@ -12,7 +12,11 @@ export type Room = {
   id: number;
   name?: string;
   imageUrl?: string;
+  lastMessage?: ChatMessage;
+  appUsers?: AppUser[];
 };
+
+export type NewRoom = Omit<Room, "id">
 
 export enum ChatType {
   CHAT = "CHAT",

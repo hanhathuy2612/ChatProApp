@@ -1,6 +1,7 @@
 import { Instance, SnapshotOut, types } from "mobx-state-tree"
 import { accountService, LoginRequest } from "app/services/accountService"
 import { withSetPropAction } from "app/models/helpers/withSetPropAction"
+import { getRootStore } from "app/models/helpers/getRootStore"
 
 export const AuthenticationStoreModel = types
   .model("AuthenticationStore")
@@ -13,8 +14,12 @@ export const AuthenticationStoreModel = types
     async login(request: LoginRequest) {
       const response = await accountService.login(request)
       if (response.status === 200) {
-        store.setProp('authToken', response.data?.id_token)
-        store.setProp('authEmail', request.username)
+        store.setProp("authToken", response.data?.id_token)
+        store.setProp("authEmail", request.username)
+
+        const rootStore = getRootStore(store)
+
+        rootStore.accountStore.fetchAccount()
       }
     },
   }))

@@ -37,6 +37,10 @@ class AccountService extends Api {
     return this.apisauce.get<AppUser[]>(`api/account/contacts`)
   }
 
+  addContact(appUser: AppUser) {
+    return this.apisauce.post<AppUser[]>(`api/account/contacts`, appUser)
+  }
+
   fetchAccount(): Promise<ApiResponse<AppUser>> {
     return this.apisauce.get<AppUser>(`api/account`)
   }
