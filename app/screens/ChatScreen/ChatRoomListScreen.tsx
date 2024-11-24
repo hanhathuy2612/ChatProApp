@@ -1,20 +1,21 @@
-import { ChatBottomTabScreenProps } from "app/navigators/ChatNavigator"
-import React, { FC, useCallback } from "react"
-import { observer } from "mobx-react-lite"
+import { useFocusEffect } from "@react-navigation/native"
 import { Text } from "app/components"
-import { Image, ImageStyle, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
+import useSockJs from "app/hooks/useSockJS"
+import { Room } from "app/models/ChatMessage"
+import { ChatBottomTabScreenProps } from "app/navigators/ChatNavigator"
+import { ChatScreenLayout } from "app/screens"
+import { roomService } from "app/services/roomService"
 import { colors } from "app/theme"
 import { imageRegistry } from "app/theme/images"
-import { ChatScreenLayout } from "app/screens"
-import { Room } from "app/models/ChatMessage"
-import { roomService } from "app/services/roomService"
-import { useFocusEffect } from "@react-navigation/native"
-import useSockJs from "app/hooks/useSockJS"
+import { observer } from "mobx-react-lite"
+import React, { FC, useCallback } from "react"
+import { Image, ImageStyle, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 
-interface ChatRoomListScreenProps extends ChatBottomTabScreenProps<"ChatRooms"> {
-}
+type ChatRoomListScreenProps = ChatBottomTabScreenProps<"ChatRooms">
 
-export const ChatRoomListScreen: FC<ChatRoomListScreenProps> = observer(function ChatRoomListScreen(_props) {
+export const ChatRoomListScreen: FC<ChatRoomListScreenProps> = observer(function ChatRoomListScreen(
+  _props,
+) {
   const { avatarMock } = imageRegistry
   const { navigation } = _props
   const [rooms, setRooms] = React.useState<Room[]>([])
@@ -25,18 +26,16 @@ export const ChatRoomListScreen: FC<ChatRoomListScreenProps> = observer(function
   }
 
   const fetchRooms = () => {
-    console.log("fetch rooms")
-    roomService.query({ page: 0, size: 20 })
-      .then(res => {
-        setRooms(res.data ?? [])
-      })
+    roomService.query({ page: 0, size: 20 }).then((res) => {
+      setRooms(res.data?.data?.content ?? [])
+    })
   }
 
   useFocusEffect(
     useCallback(() => {
       fetchRooms()
       return () => {
-        console.log("Screen is unfocused")
+        // TODO: handle unmount
       }
     }, []),
   )
@@ -44,19 +43,18 @@ export const ChatRoomListScreen: FC<ChatRoomListScreenProps> = observer(function
   return (
     <ChatScreenLayout>
       <View style={$roomsListContainer}>
-        {rooms.length > 0 && rooms.map((item, index) => (
-          <TouchableOpacity key={`${item}${index}`}
-                            onPress={() => goChatRoom(item)}
-          >
-            <View style={$roomListItem}>
-              <Image source={avatarMock} style={$roomImage} />
-              <View style={$roomDetails}>
-                <Text style={$roomName}>{item.name}</Text>
-                <Text style={$latestMessage}>{item.lastMessage?.content}</Text>
+        {rooms.length > 0 &&
+          rooms.map((item, index) => (
+            <TouchableOpacity key={`${item}${index}`} onPress={() => goChatRoom(item)}>
+              <View style={$roomListItem}>
+                <Image source={avatarMock} style={$roomImage} />
+                <View style={$roomDetails}>
+                  <Text style={$roomName}>{item.name}</Text>
+                  <Text style={$latestMessage}>{item.lastMessage?.content}</Text>
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        ))}
+            </TouchableOpacity>
+          ))}
       </View>
     </ChatScreenLayout>
   )

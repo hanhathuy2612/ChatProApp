@@ -1,11 +1,11 @@
 import React from "react"
-import { Icon, TextField, TextFieldAccessoryProps } from "app/components/index"
+import { Icon, IconTypes, TextField, TextFieldAccessoryProps } from "app/components/index"
 import { TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import { colors } from "app/theme"
 
 export type AppInputProps = {
   placeholder?: string,
-  icon?: string,
+  icon?: IconTypes,
   multiline?: boolean,
   onSendPress?: (text: string) => void,
 }
@@ -20,8 +20,8 @@ export const AppInput = ({
   const [text, setText] = React.useState<string>("")
 
   const handleSendPress = () => {
-    onSendPress?.(text);
-    setText('')
+    onSendPress?.(text)
+    setText("")
   }
 
   return (
@@ -41,7 +41,7 @@ export const AppInput = ({
 
 const radius = 8
 
-const renderIcon = (props: TextFieldAccessoryProps, icon: any, onSendPress: () => void) => {
+const renderIcon = (props: TextFieldAccessoryProps, icon: IconTypes, onSendPress: () => void) => {
   const $iconContainer: ViewStyle = {
     width: 40,
     height: 40,

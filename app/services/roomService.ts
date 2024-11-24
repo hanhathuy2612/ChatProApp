@@ -1,19 +1,25 @@
-import { Api } from "app/services/api"
-import { NewRoom, Room } from "app/models/ChatMessage"
-import { ApiResponse } from "apisauce"
-import { omit } from "lodash"
+import { Api } from "app/services/api";
+import { NewRoom, Room } from './../models/ChatMessage';
+import { ApiResponse } from "apisauce";
+import { BaseResponse, DefaultApiResponse, PaginatedResponse } from "app/models/common";
+
+interface RoomQuery {
+  page: number
+  size: number
+} 
 
 class RoomService extends Api {
-  query(req?: any): Promise<ApiResponse<Room[]>> {
-    return this.apisauce.get<Room[]>(`api/rooms`, req)
+
+  getRoomByUsers(emails: string[]): Promise<ApiResponse<Room>> {
+    return this.apisauce.post<Room>(`api/rooms/by-users`, emails)
+  }
+
+  query(req?: RoomQuery): Promise<DefaultApiResponse<PaginatedResponse<Room>>> {
+    return this.apisauce.get<BaseResponse<PaginatedResponse<Room>>>(`api/rooms`, req)
   }
 
   create(room: NewRoom): Promise<ApiResponse<Room>> {
     return this.apisauce.post<Room>(`api/rooms`, room)
-  }
-
-  getMessagesInRoom(req: any) {
-    return this.apisauce.get<Room[]>(`api/rooms/${req.roomId}/chat-messages`, omit(req, "roomId"))
   }
 }
 

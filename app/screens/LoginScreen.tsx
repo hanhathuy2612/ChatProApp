@@ -6,16 +6,15 @@ import { useStores } from "../models"
 import { AppStackScreenProps } from "../navigators"
 import { spacing } from "../theme"
 import { Controller, SubmitHandler, useForm } from "react-hook-form"
-import { LoginRequest } from "app/services/accountService"
 import PasswordField from "app/components/PasswordField"
+import { LoginRequest } from "app/services/authenticationService"
 
 type LoginForm = {
-  username: string,
-  password: string,
+  username: string
+  password: string
 }
 
-interface LoginScreenProps extends AppStackScreenProps<"Login"> {
-}
+type LoginScreenProps = AppStackScreenProps<"Login">
 
 export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_props) {
   const { navigation } = _props
@@ -52,7 +51,6 @@ export const LoginScreen: FC<LoginScreenProps> = observer(function LoginScreen(_
   function signup() {
     navigation.navigate("SignUp")
   }
-
 
   return (
     <Screen

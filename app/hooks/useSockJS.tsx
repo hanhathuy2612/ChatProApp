@@ -34,11 +34,14 @@ const useSockJs = () => {
     console.error("Socket connection error", frame.body)
   }
 
+  const stompFactory = (url: string) => {
+    return new SockJS(url)
+  }
+
   useEffect(() => {
     const url = `http://${config.SERVER_HOST}:8080/ws`
-    const socket = new SockJS(url)
 
-    stompClient.current = Stomp.over(socket)
+    stompClient.current = Stomp.over(() => stompFactory(url))
 
     const headers: StompHeaders = {
       forceBinaryWSFrames: "true",

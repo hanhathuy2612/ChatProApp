@@ -11,15 +11,16 @@ import { useHeader } from "app/utils/useHeader"
 import { useStores } from "app/models"
 import useSockJs from "app/hooks/useSockJS"
 
-interface ChatRoomScreenProps extends AppStackScreenProps<"ChatRoom"> {
-}
+type ChatRoomScreenProps = AppStackScreenProps<"ChatRoom">
 
 export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoomScreen(_props) {
   const { navigation } = _props
   const route = useRoute<RouteProp<AppStackParamList, "ChatRoom">>()
   const { roomId, title } = route.params
 
-  const { accountStore: { id: accountId } } = useStores()
+  const {
+    accountStore: { id: accountId },
+  } = useStores()
 
   useHeader(
     {
@@ -30,11 +31,7 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
     [roomId],
   )
 
-  const {
-    lastMessage,
-    sendMessage,
-    isConnected,
-  } = useSockJs()
+  const { lastMessage, sendMessage, isConnected } = useSockJs()
 
   const [messages, setMessages] = useState<ChatMessage[]>([])
 
@@ -56,13 +53,12 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
   }
 
   const fetchMessages = () => {
-    chatMessageService.query({ page: 0, size: 20, roomId })
-      .then(
-        res => {
-          setMessages(res.data ?? [])
-        },
-      )
-      .catch(error => {
+    chatMessageService
+      .query({ page: 0, size: 20, roomId })
+      .then((res) => {
+        setMessages(res.data ?? [])
+      })
+      .catch((error) => {
         console.log("fetchMessages error: ", error)
       })
   }
@@ -78,30 +74,35 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
       return
     }
 
-    if (!messages.some(message => message.id === lastMessage?.id)) {
+    if (!messages.some((message) => message.id === lastMessage?.id)) {
       setMessages([...messages, lastMessage])
     }
   }, [lastMessage])
 
   return (
-    <Screen contentContainerStyle={$rootContentContainer}
-            style={$root}
-            preset="scroll"
-            safeAreaEdges={["top", "bottom"]}
+    <Screen
+      contentContainerStyle={$rootContentContainer}
+      style={$root}
+      preset="scroll"
+      safeAreaEdges={["top", "bottom"]}
     >
       <View style={$messageContainer}>
-        {messages.map(message => (
-          <View key={message.id} style={[$messageItem, message.sender?.id === accountId && $selfMessage]}>
+        {messages.map((message) => (
+          <View
+            key={message.id}
+            style={[$messageItem, message.sender?.id === accountId && $selfMessage]}
+          >
             <Text text={message.content} style={$messageItemText} />
           </View>
         ))}
       </View>
 
       <View style={$writeContainer}>
-        <AppInput placeholder={"Write"}
-                  icon={"dialog"}
-                  multiline={true}
-                  onSendPress={handleSendPress}
+        <AppInput
+          placeholder={"Write"}
+          icon={"dialog"}
+          multiline={true}
+          onSendPress={handleSendPress}
         />
         <Icon icon={"dialog"} size={40} />
       </View>
