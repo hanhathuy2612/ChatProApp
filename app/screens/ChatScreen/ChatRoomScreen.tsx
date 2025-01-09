@@ -54,7 +54,7 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
 
   const fetchMessages = () => {
     chatMessageService
-      .query({ page: 0, size: 20, roomId })
+      .query({ page: 0, size: 20, roomId: parseInt(roomId) })
       .then((res) => {
         setMessages(res.data ?? [])
       })

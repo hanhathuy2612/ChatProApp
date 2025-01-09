@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import SockJS from "sockjs-client"
-import { CompatClient, IFrame, Stomp, StompHeaders } from "@stomp/stompjs"
+import { CompatClient, IFrame, IMessage, Stomp, StompHeaders } from "@stomp/stompjs"
 import { ChatMessage } from "app/models/ChatMessage"
 import config from "app/config"
 import { useStores } from "app/models"
@@ -13,7 +13,7 @@ const useSockJs = () => {
 
   const sendMessage = (message: ChatMessage) => {
     if (stompClient?.current?.connected) {
-      stompClient.current.send("/app/chat.sendMessage", {}, JSON.stringify(message))
+      stompClient.current.send(`/app/chat.sendMessage/${message.room.id}`, {}, JSON.stringify(message))
     } else {
       console.error("Socket is not connected.")
     }
@@ -25,9 +25,13 @@ const useSockJs = () => {
     }
     setIsConnected(true)
 
-    stompClient.current?.subscribe("/topic/public", (messageOutput) => {
+    subscribe("/topic/public", (messageOutput) => {
       setLastMessage(JSON.parse(messageOutput.body))
     })
+  }
+
+  const subscribe = (url: string, callback: (message: IMessage) => void) => {
+    stompClient.current?.subscribe(url, callback)
   }
 
   const onError = (frame: IFrame) => {
@@ -39,7 +43,7 @@ const useSockJs = () => {
   }
 
   useEffect(() => {
-    const url = `http://${config.SERVER_HOST}:8080/ws`
+    const url = `http://${config.SERVER_HOST}:${config.SERVER_PORT}/ws`
 
     stompClient.current = Stomp.over(() => stompFactory(url))
 
@@ -64,7 +68,7 @@ const useSockJs = () => {
   return {
     sendMessage,
     lastMessage,
-    isConnected
+    isConnected,
   }
 }
 
