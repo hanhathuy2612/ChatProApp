@@ -123,7 +123,7 @@ interface CardProps extends TouchableOpacityProps {
  * @param {CardProps} props - The props for the `Card` component.
  * @returns {JSX.Element} The rendered `Card` component.
  */
-export function Card(props: CardProps) {
+export function Card(props: CardProps): JSX.Element {
   const {
     content,
     contentTx,

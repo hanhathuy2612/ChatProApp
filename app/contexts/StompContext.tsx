@@ -1,12 +1,12 @@
 import { Client, IMessage } from "@stomp/stompjs"
 import config from "app/config"
-import { ChatMessage } from "app/models/ChatMessage"
+import { Message } from "app/API/types/message.types"
 import React, { createContext, useContext, useEffect, useMemo, useRef } from "react"
 import SockJS from "sockjs-client"
 
 interface StompContextType {
-  sendMessage: (message: ChatMessage, destination: string) => void
-  subscribe: (url: string, callback: (message: IMessage) => void) => void
+  sendMessage: (message: Message, destination: string) => void
+  subscribe: (url: string, callback: (message: Message) => void) => void
   unsubscribe: (url: string) => void
 }
 
@@ -19,7 +19,7 @@ export const StompProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (!clientRef.current) {
       const client = new Client({
         webSocketFactory: () => {
-          return new SockJS(`http://${config.SERVER_HOST}:${config.SERVER_PORT}/ws`);
+          return new SockJS(`http://${config.SERVER_HOST}:${config.SERVER_PORT}/ws`)
         },
         connectHeaders: {
           forceBinaryWSFrames: "true",
@@ -47,19 +47,23 @@ export const StompProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     return () => {
       if (clientRef.current) {
-        clientRef.current.deactivate()
+        clientRef.current.deactivate().then(() => {
+          console.log("Deactivated from STOMP")
+        })
       }
     }
   }, [])
 
-  const sendMessage = (message: ChatMessage, destination: string) => {
+  const sendMessage = (message: Message, destination: string) => {
     if (clientRef.current) {
       clientRef.current.publish({ destination: destination, body: JSON.stringify(message) })
     }
   }
 
-  const subscribe = (url: string, callback: (message: IMessage) => void) => {
-    clientRef.current?.subscribe(url, callback)
+  const subscribe = (url: string, callback: (message: Message) => void) => {
+    clientRef.current?.subscribe(url, (data: IMessage) => {
+      callback?.(JSON.parse(data.body))
+    })
   }
 
   const unsubscribe = (url: string) => {

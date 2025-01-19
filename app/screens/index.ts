@@ -9,6 +9,6 @@ export * from "./ErrorScreen/ErrorBoundary"
 
 export * from "./ChatScreen/ChatScreenLayout"
 export * from "./ChatScreen/ChatRoomScreen"
-export * from "./ChatScreen/ContactsScreen"
-export * from "./ChatScreen/ChatRoomListScreen"
+export * from "./ChatScreen/ContactsScreen/ContactsScreen"
+export * from "./ChatScreen/RoomListScreen"
 export * from "./SignUpScreen"

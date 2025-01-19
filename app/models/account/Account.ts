@@ -1,6 +1,6 @@
 import { Instance, SnapshotIn, SnapshotOut, types } from "mobx-state-tree"
 import { withSetPropAction } from "app/models/helpers/withSetPropAction"
-import { accountService } from "app/services/accountService"
+import { accountService } from "app/API/services/accountService"
 
 /**
  * Model description here for TypeScript hints.
@@ -20,7 +20,6 @@ export const AccountModel = types
       accountService.fetchAccount().then(
         res => {
           if (res.status === 200) {
-            console.log("account info: ", res.data)
             const account = res.data
             store.setProp("id", account?.id)
             store.setProp("email", account?.email)
@@ -30,15 +29,12 @@ export const AccountModel = types
         },
       )
     },
-  })) // eslint-disable-line @typescript-eslint/no-unused-vars
+  }))
 
-export interface Account extends Instance<typeof AccountModel> {
-}
+export type Account = Instance<typeof AccountModel>
 
-export interface AccountSnapshotOut extends SnapshotOut<typeof AccountModel> {
-}
+export type AccountSnapshotOut = SnapshotOut<typeof AccountModel>
 
-export interface AccountSnapshotIn extends SnapshotIn<typeof AccountModel> {
-}
+export type AccountSnapshotIn = SnapshotIn<typeof AccountModel>
 
 export const createAccountDefaultModel = () => types.optional(AccountModel, {})

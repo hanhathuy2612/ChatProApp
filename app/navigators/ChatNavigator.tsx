@@ -6,7 +6,7 @@ import { colors, spacing, typography } from "app/theme"
 import { Icon, Text } from "app/components"
 import React from "react"
 import { TextStyle, ViewStyle } from "react-native"
-import { ChatRoomListScreen } from "app/screens/ChatScreen/ChatRoomListScreen"
+import { RoomListScreen } from "app/screens/ChatScreen/RoomListScreen"
 import { ContactsScreen } from "app/screens"
 import { observer } from "mobx-react-lite"
 
@@ -41,7 +41,7 @@ const ChatNavigator = observer(
       >
         <Tab.Screen
           name="ChatRooms"
-          component={ChatRoomListScreen}
+          component={RoomListScreen}
           options={{
             tabBarLabel: ({ focused }) => (
               <Text style={[$tabBarLabel, { color: focused ? colors.tint : undefined }]}>Chat</Text>

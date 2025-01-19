@@ -1,33 +1,47 @@
 import { useFocusEffect } from "@react-navigation/native"
 import { Text } from "app/components"
 import { useStomp } from "app/contexts/StompContext"
-import { Room } from "app/models/ChatMessage"
+import { Room } from "app/API/types/message.types"
 import { ChatBottomTabScreenProps } from "app/navigators/ChatNavigator"
 import { ChatScreenLayout } from "app/screens"
-import { roomService } from "app/services/roomService"
+import { roomService } from "app/API/services/roomService"
 import { colors } from "app/theme"
 import { imageRegistry } from "app/theme/images"
 import { observer } from "mobx-react-lite"
 import React, { FC, useCallback, useEffect } from "react"
 import { Image, ImageStyle, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
+import { User, appUserUtils, KIND } from "app/API/types"
+import { useStores } from "app/models"
 
 type ChatRoomListScreenProps = ChatBottomTabScreenProps<"ChatRooms">
 
-export const ChatRoomListScreen: FC<ChatRoomListScreenProps> = observer(function ChatRoomListScreen(
+export const RoomListScreen: FC<ChatRoomListScreenProps> = observer(function ChatRoomListScreen(
   _props,
 ) {
+  const { accountStore: { id: currentUserId } } = useStores()
   const { avatarMock } = imageRegistry
   const { navigation } = _props
   const [rooms, setRooms] = React.useState<Room[]>([])
   const { subscribe } = useStomp()
 
+  const getName = useCallback((room: Room) => {
+    if (room.name) {
+      return room.name
+    }
+    const friend: User | undefined = room.appUsers?.findLast(user => user.id !== currentUserId)
+    return friend ? appUserUtils.getName(friend) : ""
+  }, [])
+
   const goChatRoom = (item: Room): void => {
-    navigation.navigate("ChatRoom", { roomId: item.id.toString(), title: item.name })
+    navigation.navigate("ChatRoom", { roomId: item.id.toString(), title: getName(item) })
   }
 
   const fetchRecentRooms = () => {
     roomService.query({ page: 0, size: 20 }).then((res) => {
-      setRooms(res.data?.data?.content ?? [])
+      console.log(res)
+      if (KIND.OK === res.kind) {
+        setRooms(res.data.content)
+      }
     })
   }
 
@@ -50,13 +64,13 @@ export const ChatRoomListScreen: FC<ChatRoomListScreenProps> = observer(function
     <ChatScreenLayout>
       <View style={$roomsListContainer}>
         {rooms.length > 0 &&
-          rooms.map((item, index) => (
-            <TouchableOpacity key={`${item}${index}`} onPress={() => goChatRoom(item)}>
+          rooms.map((room, index) => (
+            <TouchableOpacity key={`${room}${index}`} onPress={() => goChatRoom(room)}>
               <View style={$roomListItem}>
                 <Image source={avatarMock} style={$roomImage} />
                 <View style={$roomDetails}>
-                  <Text style={$roomName}>{item.name}</Text>
-                  <Text style={$latestMessage}>{item.lastMessage?.content}</Text>
+                  <Text style={$roomName}>{getName(room)}</Text>
+                  <Text style={$latestMessage}>{room.lastMessage?.content}</Text>
                 </View>
               </View>
             </TouchableOpacity>

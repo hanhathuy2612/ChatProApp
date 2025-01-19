@@ -11,16 +11,16 @@ import {
   NavigatorScreenParams,
 } from "@react-navigation/native"
 import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack"
+import ChatNavigator, { ChatBottomTabParamList } from "app/navigators/ChatNavigator"
+import * as Screens from "app/screens"
+import { colors } from "app/theme"
 import { observer } from "mobx-react-lite"
 import React from "react"
 import { useColorScheme } from "react-native"
-import * as Screens from "app/screens"
 import Config from "../config"
 import { useStores } from "../models"
 import { DemoTabParamList } from "./DemoNavigator"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
-import { colors } from "app/theme"
-import ChatNavigator, { ChatBottomTabParamList } from "app/navigators/ChatNavigator"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -97,7 +97,7 @@ const AppStack = observer(function AppStack() {
   )
 })
 
-export interface NavigationProps extends Partial<React.ComponentProps<typeof NavigationContainer>> {}
+export type NavigationProps = Partial<React.ComponentProps<typeof NavigationContainer>>
 
 export const AppNavigator = observer(function AppNavigator(props: NavigationProps) {
   const colorScheme = useColorScheme()

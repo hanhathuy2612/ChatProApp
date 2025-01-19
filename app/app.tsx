@@ -1,4 +1,3 @@
-/* eslint-disable import/first */
 /**
  * Welcome to the main entry point of the app. In this file, we'll
  * be kicking off our app.
@@ -14,23 +13,25 @@ if (__DEV__) {
   // Load Reactotron in development only.
   // Note that you must be using metro's `inlineRequires` for this to work.
   // If you turn it off in metro.config.js, you'll have to manually import it.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   require("./devtools/ReactotronConfig.ts")
 }
-import "./i18n"
-import "./utils/ignoreWarnings"
+import { ErrorBoundary } from "app/screens"
 import { useFonts } from "expo-font"
-import React from "react"
-import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-context"
 import * as Linking from "expo-linking"
+import React from "react"
+import { ViewStyle } from "react-native"
+import { GestureHandlerRootView } from "react-native-gesture-handler"
+import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-context"
+import Config from "./config"
+import { DatabaseProvider } from "./contexts/DatabaseContext"
+import { StompProvider } from "./contexts/StompContext"
+import "./i18n"
 import { useInitialRootStore } from "./models"
 import { AppNavigator, useNavigationPersistence } from "./navigators"
-import { ErrorBoundary } from "app/screens"
-import * as storage from "./utils/storage"
 import { customFontsToLoad } from "./theme"
-import Config from "./config"
-import { GestureHandlerRootView } from "react-native-gesture-handler"
-import { ViewStyle } from "react-native"
-import { StompProvider } from "./contexts/StompContext"
+import "./utils/ignoreWarnings"
+import * as storage from "./utils/storage"
 
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE"
 
@@ -105,13 +106,15 @@ function App(props: Readonly<AppProps>): JSX.Element | null {
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <ErrorBoundary catchErrors={Config.catchErrors}>
         <GestureHandlerRootView style={$container}>
-          <StompProvider>
-            <AppNavigator
-              linking={linking}
-              initialState={initialNavigationState}
-              onStateChange={onNavigationStateChange}
-            />
-          </StompProvider>
+          <DatabaseProvider>
+            <StompProvider>
+              <AppNavigator
+                linking={linking}
+                initialState={initialNavigationState}
+                onStateChange={onNavigationStateChange}
+              />
+            </StompProvider>
+          </DatabaseProvider>
         </GestureHandlerRootView>
       </ErrorBoundary>
     </SafeAreaProvider>

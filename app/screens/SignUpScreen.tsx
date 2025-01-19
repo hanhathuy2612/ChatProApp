@@ -6,7 +6,7 @@ import { AppStackScreenProps } from "app/navigators"
 import { Button, Screen, Text, TextField } from "app/components"
 import { spacing } from "app/theme"
 import { Controller, SubmitHandler, useForm } from "react-hook-form"
-import { accountService, SignupRequest } from "app/services/accountService"
+import { accountService, SignupRequest } from "app/API/services/accountService"
 import PasswordField from "app/components/PasswordField"
 
 

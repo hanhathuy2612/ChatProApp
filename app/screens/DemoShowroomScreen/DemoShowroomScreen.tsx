@@ -7,7 +7,7 @@ import { ListItem, ListView, ListViewRef, Screen, Text } from "../../components"
 import { isRTL } from "../../i18n"
 import { DemoTabParamList, DemoTabScreenProps } from "../../navigators/DemoNavigator"
 import { colors, spacing } from "../../theme"
-import { useSafeAreaInsetsStyle } from "../../utils/useSafeAreaInsetsStyle"
+import { useSafeAreaInsetsStyle } from "../../hooks/useSafeAreaInsetsStyle"
 import * as Demos from "./demos"
 import { DrawerIconButton } from "./DrawerIconButton"
 

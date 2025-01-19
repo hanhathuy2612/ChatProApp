@@ -7,7 +7,7 @@ import { AppStackScreenProps } from "../navigators"
 import { spacing } from "../theme"
 import { Controller, SubmitHandler, useForm } from "react-hook-form"
 import PasswordField from "app/components/PasswordField"
-import { LoginRequest } from "app/services/authenticationService"
+import { LoginRequest } from "app/API/types"
 
 type LoginForm = {
   username: string

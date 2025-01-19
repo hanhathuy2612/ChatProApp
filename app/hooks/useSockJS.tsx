@@ -1,17 +1,17 @@
 import { useEffect, useRef, useState } from "react"
 import SockJS from "sockjs-client"
 import { CompatClient, IFrame, IMessage, Stomp, StompHeaders } from "@stomp/stompjs"
-import { ChatMessage } from "app/models/ChatMessage"
+import { Message } from "app/API/types/message.types"
 import config from "app/config"
 import { useStores } from "app/models"
 
 const useSockJs = () => {
   const { authenticationStore: { authEmail } } = useStores()
   const [isConnected, setIsConnected] = useState<boolean>(false)
-  const [lastMessage, setLastMessage] = useState<ChatMessage>()
+  const [lastMessage, setLastMessage] = useState<Message>()
   const stompClient = useRef<CompatClient | null>(null)
 
-  const sendMessage = (message: ChatMessage) => {
+  const sendMessage = (message: Message) => {
     if (stompClient?.current?.connected) {
       stompClient.current.send(`/app/chat.sendMessage/${message.room.id}`, {}, JSON.stringify(message))
     } else {

@@ -6,11 +6,11 @@
  * documentation for more details.
  */
 import { ApiResponse, ApisauceConfig, ApisauceInstance, create } from "apisauce"
-import config from "../../config"
-import { GeneralApiProblem, getGeneralApiProblem } from "./apiProblem"
-import type { ApiFeedResponse } from "./api.types"
-import type { EpisodeSnapshotIn } from "app/models/Episode"
-import { _rootStore } from "app/models"
+import config from "../config"
+import { EpisodeSnapshotIn } from "app/models/Episode"
+import { GeneralApiProblem, getGeneralApiProblem } from "app/API/apiProblem"
+import { ApiFeedResponse, KIND } from "app/API/types"
+import { loadString } from "app/utils/storage"
 
 /**
  * Configuring the apisauce instance.
@@ -23,20 +23,22 @@ export const DEFAULT_API_CONFIG: ApisauceConfig = {
   },
 }
 
+const permitAllEndponts = ["/api/authenticate/login"]
+const isPermitAllEndpoint = (url: string) => permitAllEndponts.includes(url)
+
 export const defaultApiSauce = create(DEFAULT_API_CONFIG)
 
 defaultApiSauce.axiosInstance.interceptors.request.use(
-  (config) => {
-    const token = _rootStore.authenticationStore.authToken
-
-    if (token) {
+  async (config) => {
+    const token = await loadString("authToken")
+    if (token && !isPermitAllEndpoint(config.url!)) {
       config.headers.Authorization = `Bearer ${token}`
     }
 
     return config
   },
   (error) => {
-    return Promise.reject(error)
+    return Promise.reject(new Error(error))
   },
 )
 
@@ -81,12 +83,12 @@ export class Api {
           ...raw,
         })) ?? []
 
-      return { kind: "ok", episodes }
+      return { kind: KIND.OK, episodes }
     } catch (e) {
       if (__DEV__ && e instanceof Error) {
         console.error(`Bad data: ${e.message}\n${response.data}`, e.stack)
       }
-      return { kind: "bad-data" }
+      return { kind: KIND.BAD_DATA }
     }
   }
 }

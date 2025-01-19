@@ -1,31 +1,20 @@
 import { getRootStore } from "app/models/helpers/getRootStore"
 import { withSetPropAction } from "app/models/helpers/withSetPropAction"
-import { authenticationService, LoginRequest } from "app/services/authenticationService"
 import { Instance, SnapshotOut, types } from "mobx-state-tree"
+import { KIND, LoginRequest } from "app/API/types"
+import { authenticationService } from "app/API/services/authenticationService"
+import { saveString } from "app/utils/storage"
 
 export const AuthenticationStoreModel = types
   .model("AuthenticationStore")
   .props({
     authToken: types.maybe(types.string),
     authEmail: "",
+    status: types.optional(types.enumeration(["idle", "pending", "done", "error"]), "idle"),
+    error: types.maybe(types.string),
   })
-  .actions(withSetPropAction)
-  .actions((store) => ({
-    async login(request: LoginRequest) {
-      const response = await authenticationService.login(request)
-      if (response.status === 200) {
-        store.setProp("authToken", response.data?.id_token)
-        store.setProp("authEmail", request.username)
-
-        const rootStore = getRootStore(store)
-
-        rootStore.accountStore.fetchAccount()
-      }
-    },
-  }))
   .views((store) => ({
     get isAuthenticated() {
-      console.log("store.authEmail: ", store.authEmail)
       return !!store.authToken
     },
     get validationError() {
@@ -36,6 +25,7 @@ export const AuthenticationStoreModel = types
       return ""
     },
   }))
+  .actions(withSetPropAction)
   .actions((store) => ({
     setAuthToken(value?: string) {
       store.authToken = value
@@ -46,6 +36,44 @@ export const AuthenticationStoreModel = types
     logout() {
       store.authToken = undefined
       store.authEmail = ""
+    },
+  }))
+  .actions((store) => ({
+    async login(request: LoginRequest) {
+      try {
+        store.setProp("status", "pending")
+        store.setProp("error", undefined)
+
+        const response = await authenticationService.login(request)
+
+        if (response.kind === KIND.OK && response.data) {
+          await this.handleLoginSuccess(response.data.id_token, request.username)
+          store.setProp("status", "done")
+        } else {
+          throw new Error("Login failed")
+        }
+      } catch (error) {
+        store.setProp("status", "error")
+        store.setProp("error", (error as Error).message)
+        throw error
+      }
+    },
+
+    async handleLoginSuccess(token: string, email: string) {
+      store.setProp("authToken", token)
+      store.setProp("authEmail", email)
+
+      await Promise.all([saveString("authToken", token), saveString("authEmail", email)])
+
+      const rootStore = getRootStore(store)
+      rootStore.accountStore.fetchAccount()
+    },
+
+    logout() {
+      store.setProp("authToken", undefined)
+      store.setProp("authEmail", "")
+      store.setProp("status", "idle")
+      store.setProp("error", undefined)
     },
   }))
 
