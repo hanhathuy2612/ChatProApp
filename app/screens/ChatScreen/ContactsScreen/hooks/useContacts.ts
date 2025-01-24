@@ -8,22 +8,22 @@ export const useContacts = () => {
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
-    const fetchContacts = async () => {
-      setIsLoading(true)
-      try {
-        const res = await accountService.getContacts()
-        if (res.status === 200) {
-          setContacts(res.data ?? [])
-        }
-      } catch (err) {
-        setError(err as Error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
     fetchContacts()
   }, [])
 
-  return { data: contacts, isLoading, error }
+  const fetchContacts = async () => {
+    setIsLoading(true)
+    try {
+      const res = await accountService.getContacts()
+      if (res.status === 200) {
+        setContacts(res.data ?? [])
+      }
+    } catch (err) {
+      setError(err as Error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return { data: contacts, isLoading, error, fetchContacts }
 }

@@ -6,12 +6,12 @@ import { colors, spacing, typography } from "app/theme"
 import { Icon, Text } from "app/components"
 import React from "react"
 import { TextStyle, ViewStyle } from "react-native"
-import { RoomListScreen } from "app/screens/ChatScreen/RoomListScreen"
+import { RecentRoomsScreen } from "app/screens/ChatScreen/RecentRoomsScreen"
 import { ContactsScreen } from "app/screens"
 import { observer } from "mobx-react-lite"
 
 export type ChatBottomTabParamList = {
-  ChatRooms: undefined
+  RecentRooms: undefined
   Contacts: undefined
 }
 
@@ -22,52 +22,52 @@ export type ChatBottomTabScreenProps<T extends keyof ChatBottomTabParamList> = C
 
 const Tab = createBottomTabNavigator<ChatBottomTabParamList>()
 
-const ChatNavigator = observer(
-  function ChatNavigator() {
-    const { bottom } = useSafeAreaInsets()
+const ChatNavigator = observer(function ChatNavigator() {
+  const { bottom } = useSafeAreaInsets()
 
-    return (
-      <Tab.Navigator
-        screenOptions={{
-          headerShown: false,
-          tabBarHideOnKeyboard: true,
-          tabBarStyle: [$tabBar, { height: bottom + 70 }],
-          tabBarActiveTintColor: colors.text,
-          tabBarInactiveTintColor: colors.text,
-          tabBarLabelStyle: $tabBarLabel,
-          tabBarItemStyle: $tabBarItem,
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarHideOnKeyboard: true,
+        tabBarStyle: [$tabBar, { height: bottom + 70 }],
+        tabBarActiveTintColor: colors.text,
+        tabBarInactiveTintColor: colors.text,
+        tabBarLabelStyle: $tabBarLabel,
+        tabBarItemStyle: $tabBarItem,
+      }}
+      initialRouteName="RecentRooms"
+    >
+      <Tab.Screen
+        name="RecentRooms"
+        component={RecentRoomsScreen}
+        options={{
+          tabBarLabel: ({ focused }) => (
+            <Text style={[$tabBarLabel, { color: focused ? colors.tint : undefined }]}>Chat</Text>
+          ),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="dialog" color={focused ? colors.tint : undefined} size={30} />
+          ),
         }}
-        initialRouteName="ChatRooms"
-      >
-        <Tab.Screen
-          name="ChatRooms"
-          component={RoomListScreen}
-          options={{
-            tabBarLabel: ({ focused }) => (
-              <Text style={[$tabBarLabel, { color: focused ? colors.tint : undefined }]}>Chat</Text>
-            ),
-            tabBarIcon: ({ focused }) => (
-              <Icon icon="dialog" color={focused ? colors.tint : undefined} size={30} />
-            ),
-          }}
-        />
+      />
 
-        <Tab.Screen
-          name="Contacts"
-          component={ContactsScreen}
-          options={{
-            tabBarLabel: ({ focused }) => (
-              <Text style={[$tabBarLabel, { color: focused ? colors.tint : undefined }]}>Contacts</Text>
-            ),
-            tabBarIcon: ({ focused }) => (
-              <Icon icon="podcast" color={focused ? colors.tint : undefined} size={30} />
-            ),
-          }}
-        />
-      </Tab.Navigator>
-    )
-  },
-)
+      <Tab.Screen
+        name="Contacts"
+        component={ContactsScreen}
+        options={{
+          tabBarLabel: ({ focused }) => (
+            <Text style={[$tabBarLabel, { color: focused ? colors.tint : undefined }]}>
+              Contacts
+            </Text>
+          ),
+          tabBarIcon: ({ focused }) => (
+            <Icon icon="podcast" color={focused ? colors.tint : undefined} size={30} />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  )
+})
 
 export default ChatNavigator
 

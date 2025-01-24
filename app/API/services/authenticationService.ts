@@ -1,4 +1,4 @@
-import { Api } from "app/API"
+import { Api } from "../api"
 import { getGeneralApiProblem } from "../apiProblem"
 import { BaseApiResponse, JWTToken, KIND, LoginRequest } from "../types"
 
@@ -6,6 +6,7 @@ class AuthenticationService extends Api {
   private readonly AUTH_URL = "api/authenticate"
 
   async login(req: LoginRequest): Promise<BaseApiResponse<JWTToken>> {
+    console.log(req)
     const response = await this.apisauce.post<JWTToken>(`${this.AUTH_URL}/login`, req, {
       headers: {
         "Content-Type": "application/json",

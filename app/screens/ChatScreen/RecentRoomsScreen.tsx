@@ -13,9 +13,9 @@ import { Image, ImageStyle, TextStyle, TouchableOpacity, View, ViewStyle } from 
 import { User, appUserUtils, KIND } from "app/API/types"
 import { useStores } from "app/models"
 
-type ChatRoomListScreenProps = ChatBottomTabScreenProps<"ChatRooms">
+type RecentRoomsScreenProps = ChatBottomTabScreenProps<"RecentRooms">
 
-export const RoomListScreen: FC<ChatRoomListScreenProps> = observer(function ChatRoomListScreen(
+export const RecentRoomsScreen: FC<RecentRoomsScreenProps> = observer(function RecentRoomsScreen(
   _props,
 ) {
   const { accountStore: { id: currentUserId } } = useStores()
@@ -46,7 +46,7 @@ export const RoomListScreen: FC<ChatRoomListScreenProps> = observer(function Cha
   }
 
   useEffect(() => {
-    subscribe("/topic/rooms/updates", (message) => {
+    subscribe(`/chat/user/${currentUserId}`, (message) => {
       console.log(message)
     })
   }, [])
@@ -64,8 +64,8 @@ export const RoomListScreen: FC<ChatRoomListScreenProps> = observer(function Cha
     <ChatScreenLayout>
       <View style={$roomsListContainer}>
         {rooms.length > 0 &&
-          rooms.map((room, index) => (
-            <TouchableOpacity key={`${room}${index}`} onPress={() => goChatRoom(room)}>
+          rooms.map((room) => (
+            <TouchableOpacity key={room.id} onPress={() => goChatRoom(room)}>
               <View style={$roomListItem}>
                 <Image source={avatarMock} style={$roomImage} />
                 <View style={$roomDetails}>

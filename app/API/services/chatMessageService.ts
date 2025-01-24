@@ -1,11 +1,11 @@
-import { Api } from "app/API"
-import { Message } from "app/API/types/message.types"
 import { ApiResponse } from "apisauce"
+import { Api } from "app/API"
+import { Message } from "app/API/types"
 
 interface ChatMessageQuery {
-  roomId: number,
-  page: number,
-  size: number,
+  roomId: string
+  page: number
+  size: number
   sort: string
 }
 

@@ -1,3 +1,5 @@
+import "react-native-get-random-values"
+import { useFocusEffect } from "@react-navigation/native"
 import { roomService } from "app/API/services"
 import { Room, User } from "app/API/types"
 import { useStores } from "app/models"
@@ -15,7 +17,7 @@ export const ContactsScreen: FC<ChatBottomTabScreenProps<"Contacts">> = observer
     const {
       authenticationStore: { authEmail },
     } = useStores()
-    const { data: contacts = [] } = useContacts()
+    const { data: contacts = [], fetchContacts } = useContacts()
 
     const navigateToChatRoom = useCallback(
       (room: Room, contact: User) => {
@@ -33,6 +35,7 @@ export const ContactsScreen: FC<ChatBottomTabScreenProps<"Contacts">> = observer
 
         try {
           const existingRoom = await roomService.getRoomByUsers(emails)
+          console.log("existingRoom", existingRoom)
           if (existingRoom.status === 200 && existingRoom.data) {
             navigateToChatRoom(existingRoom.data, contact)
             return
@@ -55,6 +58,12 @@ export const ContactsScreen: FC<ChatBottomTabScreenProps<"Contacts">> = observer
           <ContactItem key={contact.id} contact={contact} onPress={handleContactPress} />
         )),
       [contacts, handleContactPress],
+    )
+
+    useFocusEffect(
+      useCallback(() => {
+        fetchContacts()
+      }, []),
     )
 
     return (

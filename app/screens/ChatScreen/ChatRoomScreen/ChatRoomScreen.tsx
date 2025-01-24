@@ -9,8 +9,9 @@ import { useStores } from "app/models"
 import { AppStackParamList, AppStackScreenProps } from "app/navigators"
 import { observer } from "mobx-react-lite"
 import React, { FC, useEffect, useRef, useState } from "react"
-import { ScrollView, TextStyle, View, ViewStyle } from "react-native"
+import { ScrollView, View } from "react-native"
 import { v4 as uuidv4 } from "uuid"
+import { $styles } from "./styles"
 
 type ChatRoomScreenProps = AppStackScreenProps<"ChatRoom">
 
@@ -26,7 +27,7 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
     {
       title: title ?? "ChatRoom",
       leftIcon: "back",
-      onLeftPress: () => navigation.navigate("Chat", { screen: "ChatRooms" }),
+      onLeftPress: () => navigation.navigate("Chat", { screen: "RecentRooms" }),
     },
     [roomId],
   )
@@ -44,14 +45,14 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
       content: message.trim(),
       type: "CHAT",
       room: {
-        id: parseInt(roomId),
+        id: roomId,
       },
       sender: {
         id: accountId ?? undefined,
       },
     }
 
-    sendMessage(chatMessage, `${destination}/send`)
+    sendMessage(chatMessage, `${destination}/messages`)
   }
 
   const fetchMessages = async () => {
@@ -59,7 +60,7 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
       page: 0,
       size: 20,
       sort: "createdDate,desc",
-      roomId: parseInt(roomId),
+      roomId,
     })
     if (res.status === 200) {
       setMessages(res.data?.reverse() ?? [])
@@ -85,36 +86,40 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
 
   useEffect(() => {
     fetchMessages().then(() => {
-      subscribe(`/chat/room/${roomId}`, (message) => {
+      subscribe(`/chat/user/${accountId}`, (message) => {
         handleLastMessage(message)
         scrollToEnd()
       })
     })
 
     return () => {
-      unsubscribe(`/chat/room/${roomId}`)
+      unsubscribe(`/chat/user/${accountId}`)
     }
   }, [roomId])
 
   return (
     <Screen
-      contentContainerStyle={$rootContentContainer}
-      style={$root}
+      style={$styles.root}
+      contentContainerStyle={$styles.rootContentContainer}
       preset="scroll"
-      safeAreaEdges={["top", "bottom"]}
+      safeAreaEdges={["bottom"]}
     >
-      <ScrollView ref={scrollViewRef} style={{ flex: 1 }} contentContainerStyle={$messageContainer}>
+      <ScrollView
+        ref={scrollViewRef}
+        style={$styles.messageScrollView}
+        contentContainerStyle={$styles.messageContainer}
+      >
         {messages.map((message) => (
           <View
             key={message.id}
-            style={[$messageItem, message.sender?.id === accountId && $selfMessage]}
+            style={[$styles.messageItem, message.sender?.id === accountId && $styles.selfMessage]}
           >
-            <Text text={message.content} style={$messageItemText} />
+            <Text text={message.content} style={$styles.messageItemText} />
           </View>
         ))}
       </ScrollView>
 
-      <View style={$writeContainer}>
+      <View style={$styles.writeContainer}>
         <AppInput
           placeholder={"Write"}
           icon={"dialog"}
@@ -126,43 +131,3 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
     </Screen>
   )
 })
-
-const $root: ViewStyle = {
-  flex: 1,
-}
-
-const $rootContentContainer: ViewStyle = {
-  flex: 1,
-  paddingHorizontal: 25,
-  paddingVertical: 52,
-  gap: 25,
-}
-
-const $messageContainer: ViewStyle = {
-  flexBasis: "auto",
-  justifyContent: "flex-end",
-  gap: 10,
-}
-
-const $messageItem: ViewStyle = {
-  backgroundColor: "#373E4E",
-  alignSelf: "flex-start",
-  alignItems: "center",
-  justifyContent: "center",
-  height: 40,
-  borderRadius: 20,
-  paddingHorizontal: 20,
-}
-
-const $messageItemText: TextStyle = {
-  color: "white",
-}
-
-const $writeContainer: ViewStyle = {
-  flexDirection: "row",
-  gap: 15,
-}
-
-const $selfMessage: ViewStyle = {
-  alignSelf: "flex-end",
-}

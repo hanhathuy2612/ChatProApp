@@ -45,7 +45,7 @@ export const AuthenticationStoreModel = types
         store.setProp("error", undefined)
 
         const response = await authenticationService.login(request)
-
+        console.log(response)
         if (response.kind === KIND.OK && response.data) {
           await this.handleLoginSuccess(response.data.id_token, request.username)
           store.setProp("status", "done")
@@ -53,6 +53,7 @@ export const AuthenticationStoreModel = types
           throw new Error("Login failed")
         }
       } catch (error) {
+        console.error(error)
         store.setProp("status", "error")
         store.setProp("error", (error as Error).message)
         throw error

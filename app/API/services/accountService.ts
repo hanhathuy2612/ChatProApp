@@ -1,6 +1,6 @@
 import { ApiResponse } from "apisauce"
-import { Api } from "app/API"
 import { SignupRequest, User } from "app/API/types"
+import { Api } from "../api"
 
 class AccountService extends Api {
   signup(req: SignupRequest) {
