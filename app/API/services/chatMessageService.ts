@@ -1,6 +1,6 @@
 import { ApiResponse } from "apisauce"
-import { Api } from "app/API"
 import { Message } from "app/API/types"
+import { Api } from "../api"
 
 interface ChatMessageQuery {
   roomId: string

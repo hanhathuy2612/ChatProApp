@@ -4,19 +4,18 @@ import { TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import { colors } from "app/theme"
 
 export type AppInputProps = {
-  placeholder?: string,
-  icon?: IconTypes,
-  multiline?: boolean,
-  onSendPress?: (text: string) => void,
+  placeholder?: string
+  icon?: IconTypes
+  multiline?: boolean
+  onSendPress?: (text: string) => void
 }
 
 export const AppInput = ({
-                           placeholder = "Search...",
-                           icon = "lookup",
-                           multiline = false,
-                           onSendPress,
-                         }: AppInputProps) => {
-
+  placeholder = "Search...",
+  icon = "lookup",
+  multiline = false,
+  onSendPress,
+}: AppInputProps) => {
   const [text, setText] = React.useState<string>("")
 
   const handleSendPress = () => {
@@ -60,10 +59,7 @@ const renderIcon = (props: TextFieldAccessoryProps, icon: IconTypes, onSendPress
   return (
     <View style={$iconContainer}>
       <TouchableOpacity onPress={() => onSendPress()}>
-        <Icon icon={icon}
-              containerStyle={[props.style, $icon]}
-              size={18}
-        />
+        <Icon icon={icon} containerStyle={[props.style, $icon]} size={18} />
       </TouchableOpacity>
     </View>
   )

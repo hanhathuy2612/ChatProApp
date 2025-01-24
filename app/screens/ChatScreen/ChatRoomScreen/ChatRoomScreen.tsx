@@ -1,15 +1,15 @@
 import { RouteProp, useRoute } from "@react-navigation/native"
 import { chatMessageService } from "app/API/services/chatMessageService"
 import { Message } from "app/API/types/message.types"
-import { Icon, Screen, Text } from "app/components"
+import { Screen, Text } from "app/components"
 import { AppInput } from "app/components/AppInput"
 import { useStomp } from "app/contexts/StompContext"
 import { useHeader } from "app/hooks/useHeader"
 import { useStores } from "app/models"
 import { AppStackParamList, AppStackScreenProps } from "app/navigators"
 import { observer } from "mobx-react-lite"
-import React, { FC, useEffect, useRef, useState } from "react"
-import { ScrollView, View } from "react-native"
+import React, { FC, useCallback, useEffect, useRef, useState } from "react"
+import { FlatList, View } from "react-native"
 import { v4 as uuidv4 } from "uuid"
 import { $styles } from "./styles"
 
@@ -32,7 +32,7 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
     [roomId],
   )
   const { sendMessage, subscribe, unsubscribe } = useStomp()
-  const scrollViewRef = useRef<ScrollView>(null)
+  const flatListRef = useRef<FlatList<Message>>(null)
   const [messages, setMessages] = useState<Message[]>([])
 
   const handleSendPress = (message: string) => {
@@ -64,13 +64,13 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
     })
     if (res.status === 200) {
       setMessages(res.data?.reverse() ?? [])
-      scrollToEnd()
+      scrollToBottom()
     }
   }
 
-  const scrollToEnd = () => {
+  const scrollToBottom = () => {
     setTimeout(() => {
-      scrollViewRef.current?.scrollToEnd({ animated: true })
+      flatListRef.current?.scrollToEnd({ animated: true })
     })
   }
 
@@ -84,11 +84,22 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
     })
   }
 
+  const renderItem = useCallback(
+    ({ item: message }: { item: Message }) => (
+      <View style={[$styles.messageItem, message.sender?.id === accountId && $styles.selfMessage]}>
+        <Text text={message.content} style={$styles.messageItemText} />
+      </View>
+    ),
+    [accountId],
+  )
+
+  const keyExtractor = useCallback((item: Message) => item.id ?? "", [])
+
   useEffect(() => {
     fetchMessages().then(() => {
       subscribe(`/chat/user/${accountId}`, (message) => {
         handleLastMessage(message)
-        scrollToEnd()
+        scrollToBottom()
       })
     })
 
@@ -101,23 +112,25 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
     <Screen
       style={$styles.root}
       contentContainerStyle={$styles.rootContentContainer}
-      preset="scroll"
-      safeAreaEdges={["bottom"]}
+      preset="fixed"
+      keyboardOffset={85}
     >
-      <ScrollView
-        ref={scrollViewRef}
-        style={$styles.messageScrollView}
+      <FlatList
+        ref={flatListRef}
+        style={$styles.messageFlatList}
         contentContainerStyle={$styles.messageContainer}
-      >
-        {messages.map((message) => (
-          <View
-            key={message.id}
-            style={[$styles.messageItem, message.sender?.id === accountId && $styles.selfMessage]}
-          >
-            <Text text={message.content} style={$styles.messageItemText} />
-          </View>
-        ))}
-      </ScrollView>
+        data={messages}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        inverted={false}
+        onContentSizeChange={scrollToBottom}
+        onLayout={scrollToBottom}
+        showsVerticalScrollIndicator={false}
+        maintainVisibleContentPosition={{
+          minIndexForVisible: 0,
+          autoscrollToTopThreshold: 10,
+        }}
+      />
 
       <View style={$styles.writeContainer}>
         <AppInput
@@ -126,7 +139,6 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
           multiline={true}
           onSendPress={handleSendPress}
         />
-        <Icon icon={"dialog"} size={40} />
       </View>
     </Screen>
   )
