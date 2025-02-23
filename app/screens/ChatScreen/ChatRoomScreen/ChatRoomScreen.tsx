@@ -1,12 +1,14 @@
 import { RouteProp, useRoute } from "@react-navigation/native"
 import { chatMessageService } from "app/API/services/chatMessageService"
-import { Message } from "app/API/types/message.types"
+import { ChatType, Message } from "app/API/types/message.types"
 import { Screen, Text } from "app/components"
 import { AppInput } from "app/components/AppInput"
 import { useStomp } from "app/contexts/StompContext"
 import { useHeader } from "app/hooks/useHeader"
 import { useStores } from "app/models"
 import { AppStackParamList, AppStackScreenProps } from "app/navigators"
+import { colors } from "app/theme"
+import { debounce } from "lodash"
 import { observer } from "mobx-react-lite"
 import React, { FC, useCallback, useEffect, useRef, useState } from "react"
 import { FlatList, View } from "react-native"
@@ -26,7 +28,11 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
   useHeader(
     {
       title: title ?? "ChatRoom",
+      titleStyle: {
+        color: colors.palette.neutral100,
+      },
       leftIcon: "back",
+      leftIconColor: colors.palette.neutral100,
       onLeftPress: () => navigation.navigate("Chat", { screen: "RecentRooms" }),
     },
     [roomId],
@@ -34,6 +40,37 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
   const { sendMessage, subscribe, unsubscribe } = useStomp()
   const flatListRef = useRef<FlatList<Message>>(null)
   const [messages, setMessages] = useState<Message[]>([])
+
+  const debouncedTyping = useCallback(
+    debounce((text: string) => {
+      sendMessage(
+        {
+          id: uuidv4(),
+          content: text,
+          type: ChatType.TYPING,
+          room: {
+            id: roomId,
+          },
+          sender: {
+            id: accountId,
+          },
+        },
+        `${destination}/typing`,
+      )
+    }, 500),
+    [roomId, accountId],
+  )
+
+  const renderItem = useCallback(
+    ({ item: message }: { item: Message }) => (
+      <View style={[$styles.messageItem, message.sender?.id === accountId && $styles.selfMessage]}>
+        <Text text={message.content} style={$styles.messageItemText} />
+      </View>
+    ),
+    [accountId],
+  )
+
+  const keyExtractor = useCallback((item: Message) => item.id ?? "", [])
 
   const handleSendPress = (message: string) => {
     if (!message) {
@@ -75,25 +112,33 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
   }
 
   const handleLastMessage = (lastMessage: Message) => {
-    setMessages((prevMessages) => {
-      const messageExists = prevMessages.some((msg) => msg.id === lastMessage.id)
+    setMessages((prevMessages: Message[]) => {
+      if (lastMessage.type === ChatType.TYPING) {
+        return handleTypingCome(lastMessage, prevMessages ?? [])
+      }
+      const messageExists = prevMessages.some((msg: Message) => msg.id === lastMessage.id)
       if (messageExists) {
-        return prevMessages.map((msg) => (msg.id === lastMessage.id ? lastMessage : msg))
+        return prevMessages.map((msg: Message) => (msg.id === lastMessage.id ? lastMessage : msg))
       }
       return [...prevMessages, lastMessage]
     })
   }
 
-  const renderItem = useCallback(
-    ({ item: message }: { item: Message }) => (
-      <View style={[$styles.messageItem, message.sender?.id === accountId && $styles.selfMessage]}>
-        <Text text={message.content} style={$styles.messageItemText} />
-      </View>
-    ),
-    [accountId],
-  )
+  const handleTypingCome = (message: Message, prevMessages: Message[] = []): Message[] => {
+    if (message.sender?.id === accountId || message.type !== ChatType.TYPING || !message.sender) {
+      return prevMessages
+    }
 
-  const keyExtractor = useCallback((item: Message) => item.id ?? "", [])
+    setTimeout(() => {
+      setMessages(prevMessages.filter((msg: Message) => msg.id !== message.id))
+    }, 2000)
+
+    return [...prevMessages, { ...message, content: "..." }]
+  }
+
+  const handleTyping = (text: string): void => {
+    debouncedTyping(text)
+  }
 
   useEffect(() => {
     fetchMessages().then(() => {
@@ -105,6 +150,8 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
 
     return () => {
       unsubscribe(`/chat/user/${accountId}`)
+      unsubscribe(`/chat/user/${accountId}/typing`)
+      debouncedTyping.cancel()
     }
   }, [roomId])
 
@@ -138,6 +185,7 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
           icon={"dialog"}
           multiline={true}
           onSendPress={handleSendPress}
+          onTyping={handleTyping}
         />
       </View>
     </Screen>

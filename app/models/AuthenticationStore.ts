@@ -4,6 +4,7 @@ import { Instance, SnapshotOut, types } from "mobx-state-tree"
 import { KIND, LoginRequest } from "app/API/types"
 import { authenticationService } from "app/API/services/authenticationService"
 import { saveString } from "app/utils/storage"
+import { ACCESS_TOKEN, AUTH_EMAIL } from "app/constants/key-stored.constant"
 
 export const AuthenticationStoreModel = types
   .model("AuthenticationStore")
@@ -45,15 +46,14 @@ export const AuthenticationStoreModel = types
         store.setProp("error", undefined)
 
         const response = await authenticationService.login(request)
-        console.log(response)
         if (response.kind === KIND.OK && response.data) {
           await this.handleLoginSuccess(response.data.id_token, request.username)
           store.setProp("status", "done")
         } else {
-          throw new Error("Login failed")
+          console.error(response)
         }
       } catch (error) {
-        console.error(error)
+        console.log(error)
         store.setProp("status", "error")
         store.setProp("error", (error as Error).message)
         throw error
@@ -64,7 +64,7 @@ export const AuthenticationStoreModel = types
       store.setProp("authToken", token)
       store.setProp("authEmail", email)
 
-      await Promise.all([saveString("authToken", token), saveString("authEmail", email)])
+      await Promise.all([saveString(ACCESS_TOKEN, token), saveString(AUTH_EMAIL, email)])
 
       const rootStore = getRootStore(store)
       rootStore.accountStore.fetchAccount()

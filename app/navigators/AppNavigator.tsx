@@ -4,12 +4,7 @@
  * Generally speaking, it will contain an auth flow (registration, login, forgot password)
  * and a "main" flow which the user will use once logged in.
  */
-import {
-  DarkTheme,
-  DefaultTheme,
-  NavigationContainer,
-  NavigatorScreenParams,
-} from "@react-navigation/native"
+import { DarkTheme, DefaultTheme, NavigationContainer, NavigatorScreenParams } from "@react-navigation/native"
 import { createNativeStackNavigator, NativeStackScreenProps } from "@react-navigation/native-stack"
 import ChatNavigator, { ChatBottomTabParamList } from "app/navigators/ChatNavigator"
 import * as Screens from "app/screens"
@@ -21,6 +16,7 @@ import Config from "../config"
 import { useStores } from "../models"
 import { DemoTabParamList } from "./DemoNavigator"
 import { navigationRef, useBackButtonHandler } from "./navigationUtilities"
+import { StompProvider } from "app/contexts/StompContext"
 
 /**
  * This type allows TypeScript to know what routes are defined in this navigator
@@ -72,10 +68,6 @@ const AppStack = observer(function AppStack() {
     >
       {isAuthenticated ? (
         <>
-          {/* <Stack.Screen name="Welcome" component={Screens.WelcomeScreen} /> */}
-
-          {/* <Stack.Screen name="Demo" component={DemoNavigator} /> */}
-
           <Stack.Screen name="Chat" component={ChatNavigator} />
           <Stack.Screen
             name="ChatRoom"
@@ -91,8 +83,6 @@ const AppStack = observer(function AppStack() {
           <Stack.Screen name="SignUp" component={Screens.SignUpScreen} />
         </>
       )}
-
-      {/* IGNITE_GENERATOR_ANCHOR_APP_STACK_SCREENS */}
     </Stack.Navigator>
   )
 })
@@ -110,7 +100,9 @@ export const AppNavigator = observer(function AppNavigator(props: NavigationProp
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
       {...props}
     >
-      <AppStack />
+      <StompProvider>
+        <AppStack />
+      </StompProvider>
     </NavigationContainer>
   )
 })

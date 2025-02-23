@@ -1,13 +1,14 @@
-import React from "react"
 import { Icon, IconTypes, TextField, TextFieldAccessoryProps } from "app/components/index"
-import { TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 import { colors } from "app/theme"
+import React from "react"
+import { TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
 
 export type AppInputProps = {
   placeholder?: string
   icon?: IconTypes
   multiline?: boolean
   onSendPress?: (text: string) => void
+  onTyping?: (text: string) => void
 }
 
 export const AppInput = ({
@@ -15,12 +16,18 @@ export const AppInput = ({
   icon = "lookup",
   multiline = false,
   onSendPress,
+  onTyping,
 }: AppInputProps) => {
   const [text, setText] = React.useState<string>("")
 
   const handleSendPress = () => {
     onSendPress?.(text)
     setText("")
+  }
+
+  const handleChangeText = (text: string) => {
+    setText(text)
+    onTyping?.(text)
   }
 
   return (
@@ -32,7 +39,7 @@ export const AppInput = ({
       inputWrapperStyle={$searchInputWrapper}
       multiline={multiline}
       numberOfLines={1}
-      onChangeText={setText}
+      onChangeText={handleChangeText}
       value={text}
     />
   )

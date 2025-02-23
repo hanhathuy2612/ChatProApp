@@ -25,7 +25,6 @@ import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { initialWindowMetrics, SafeAreaProvider } from "react-native-safe-area-context"
 import Config from "./config"
 import { DatabaseProvider } from "./contexts/DatabaseContext"
-import { StompProvider } from "./contexts/StompContext"
 import "./i18n"
 import { useInitialRootStore } from "./models"
 import { AppNavigator, useNavigationPersistence } from "./navigators"
@@ -107,13 +106,11 @@ function App(props: Readonly<AppProps>): JSX.Element | null {
       <ErrorBoundary catchErrors={Config.catchErrors}>
         <GestureHandlerRootView style={$container}>
           <DatabaseProvider>
-            <StompProvider>
-              <AppNavigator
-                linking={linking}
-                initialState={initialNavigationState}
-                onStateChange={onNavigationStateChange}
-              />
-            </StompProvider>
+            <AppNavigator
+              linking={linking}
+              initialState={initialNavigationState}
+              onStateChange={onNavigationStateChange}
+            />
           </DatabaseProvider>
         </GestureHandlerRootView>
       </ErrorBoundary>

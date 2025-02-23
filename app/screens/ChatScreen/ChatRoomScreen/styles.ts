@@ -14,11 +14,13 @@ export const $styles = StyleSheet.create({
   },
   messageFlatList: {
     flex: 1,
+    width: "100%",
   },
   messageContainer: {
     justifyContent: "flex-end",
     gap: 10,
     paddingHorizontal: 10,
+    width: "100%",
   },
   messageItem: {
     backgroundColor: "#373E4E",
@@ -38,5 +40,6 @@ export const $styles = StyleSheet.create({
   },
   selfMessage: {
     alignSelf: "flex-end",
+    backgroundColor: "#5b5b99",
   },
 })

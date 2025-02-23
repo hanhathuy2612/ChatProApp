@@ -24,4 +24,5 @@ export enum ChatType {
   LEAVE = "LEAVE",
   CONNECTED = "CONNECTED",
   DISCONNECTED = "DISCONNECTED",
+  TYPING = "TYPING",
 }
