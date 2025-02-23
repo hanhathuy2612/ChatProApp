@@ -72,7 +72,11 @@ export const StompProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const sendMessage = (message: Message, destination: string) => {
     if (clientRef.current?.connected) {
-      clientRef.current.publish({ destination, body: JSON.stringify(message) })
+      clientRef.current.publish({
+        destination, body: JSON.stringify(message), headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
     } else {
       console.warn("⚠️ WebSocket not connected. Unable to send message.")
     }
