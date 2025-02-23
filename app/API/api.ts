@@ -11,6 +11,7 @@ import { EpisodeSnapshotIn } from "app/models/Episode"
 import { GeneralApiProblem, getGeneralApiProblem } from "app/API/apiProblem"
 import { ApiFeedResponse, KIND } from "app/API/types"
 import { loadString } from "app/utils/storage"
+import { ACCESS_TOKEN } from "app/constants/key-stored.constant"
 
 /**
  * Configuring the apisauce instance.
@@ -23,14 +24,14 @@ export const DEFAULT_API_CONFIG: ApisauceConfig = {
   },
 }
 
-const permitAllEndponts = ["/api/authenticate/login"]
-const isPermitAllEndpoint = (url: string) => permitAllEndponts.includes(url)
+const permitAllEndpoints = ["/api/authenticate/login"]
+const isPermitAllEndpoint = (url: string) => permitAllEndpoints.includes(url)
 
 export const defaultApiSauce = create(DEFAULT_API_CONFIG)
 
 defaultApiSauce.axiosInstance.interceptors.request.use(
   async (config) => {
-    const token = await loadString("authToken")
+    const token = await loadString(ACCESS_TOKEN)
     if (token && !isPermitAllEndpoint(config.url!)) {
       config.headers.Authorization = `Bearer ${token}`
     }
