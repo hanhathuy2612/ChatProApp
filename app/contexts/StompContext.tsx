@@ -1,4 +1,4 @@
-import { Client, IMessage } from "@stomp/stompjs"
+import { Client, IMessage, messageCallbackType, StompHeaders } from "@stomp/stompjs"
 import { Message } from "app/API/types/message.types"
 import config from "app/config"
 import React, { createContext, useContext, useEffect, useMemo, useRef } from "react"
@@ -52,7 +52,7 @@ export const StompProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       connectHeaders: {
         Authorization: `Bearer ${token}`,
       },
-      debug: (str) => console.log("DEBUG: " + str),
+      debug: (str) => console.debug("DEBUG: " + str),
       reconnectDelay: 5000,
       heartbeatIncoming: 4000,
       heartbeatOutgoing: 4000,
@@ -88,10 +88,13 @@ export const StompProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       return
     }
 
-    const subscription = clientRef.current.subscribe(url, (data: IMessage) => {
+    const headers: StompHeaders = {
+      Authorization: `Bearer ${token}`,
+    }
+    const messageCallback: messageCallbackType = (data: IMessage) => {
       callback?.(JSON.parse(data.body))
-    })
-
+    }
+    const subscription = clientRef.current.subscribe(url, messageCallback, headers)
     subscriptions.current.set(url, subscription.id)
   }
 

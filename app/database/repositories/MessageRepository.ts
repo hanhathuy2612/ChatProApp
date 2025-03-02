@@ -1,5 +1,5 @@
 import { Database, Q, Collection } from "@nozbe/watermelondb"
-import { Message } from "../models/Message"
+import { Message } from "app/database"
 
 export class MessageRepository {
   private readonly messages: Collection<Message>

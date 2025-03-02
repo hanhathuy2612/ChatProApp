@@ -1,6 +1,6 @@
 import { Api } from "../api"
 import { getGeneralApiProblem } from "../apiProblem"
-import { BaseApiResponse, JWTToken, KIND, LoginRequest } from "../types"
+import { BaseApiResponse, JWTToken, KIND, LoginRequest } from "app/API"
 
 class AuthenticationService extends Api {
   private readonly AUTH_URL = "api/authenticate"
@@ -12,6 +12,8 @@ class AuthenticationService extends Api {
         "Content-Type": "application/json",
       },
     })
+
+    console.log(response.status)
 
     if (!response.ok) {
       const problem = getGeneralApiProblem(response)

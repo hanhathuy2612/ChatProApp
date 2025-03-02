@@ -24,8 +24,8 @@ export const DEFAULT_API_CONFIG: ApisauceConfig = {
   },
 }
 
-const permitAllEndpoints = ["/api/authenticate/login"]
-const isPermitAllEndpoint = (url: string) => permitAllEndpoints.includes(url)
+const permitAllEndpoints = ["api/authenticate/login"]
+const isPermitAllEndpoint = (url: string) => permitAllEndpoints.some(endpoint => url.includes(endpoint))
 
 export const defaultApiSauce = create(DEFAULT_API_CONFIG)
 

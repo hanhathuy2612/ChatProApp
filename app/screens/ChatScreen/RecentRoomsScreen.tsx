@@ -12,6 +12,7 @@ import { imageRegistry } from "app/theme/images"
 import { observer } from "mobx-react-lite"
 import React, { FC, useCallback } from "react"
 import { Image, ImageStyle, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
+
 type RecentRoomsScreenProps = ChatBottomTabScreenProps<"RecentRooms">
 export const RecentRoomsScreen: FC<RecentRoomsScreenProps> = observer(function RecentRoomsScreen(
   _props,
@@ -47,11 +48,9 @@ export const RecentRoomsScreen: FC<RecentRoomsScreenProps> = observer(function R
 
   const handleMessage = useCallback((message: Message) => {
     setRooms((currentRooms) => {
-      console.log("currentRooms", currentRooms)
-      const newRooms = currentRooms.map((room) =>
+      return currentRooms.map((room) =>
         room.id === message.room.id ? { ...room, lastMessage: message } : room,
       )
-      return newRooms
     })
   }, [])
 
