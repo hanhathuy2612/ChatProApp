@@ -35,14 +35,14 @@ export const ContactsScreen: FC<ChatBottomTabScreenProps<"Contacts">> = observer
 
         try {
           const existingRoom = await roomService.getRoomByUsers(emails)
-          console.log("existingRoom", existingRoom)
           if (existingRoom.status === 200 && existingRoom.data) {
             navigateToChatRoom(existingRoom.data, contact)
             return
           }
 
-          const newRoom = await roomService.create({ appUsers: [contact] })
+          const newRoom = await roomService.create({ members: [contact] })
           if (newRoom.status === 200 && newRoom.data) {
+            console.log("new room: ", newRoom.data)
             navigateToChatRoom(newRoom.data, contact)
           }
         } catch (error) {

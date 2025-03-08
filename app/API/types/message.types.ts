@@ -13,10 +13,18 @@ export type Room = {
   name?: string
   imageUrl?: string
   lastMessage?: Message
-  appUsers?: User[]
+  roomMembers?: RoomMember[]
 }
 
-export type NewRoom = Omit<Room, "id">
+export type RoomMember = {
+  id?: string;
+  member: User;
+  room: Room
+}
+
+export type CreateRoomRequest =  {
+  members: User[]
+}
 
 export enum ChatType {
   CHAT = "CHAT",

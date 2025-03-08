@@ -13,7 +13,7 @@ if (__DEV__) {
   // Load Reactotron in development only.
   // Note that you must be using metro's `inlineRequires` for this to work.
   // If you turn it off in metro.config.js, you'll have to manually import it.
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
+   
   require("./devtools/ReactotronConfig.ts")
 }
 import { ErrorBoundary } from "app/screens"

@@ -1,6 +1,6 @@
 import { useFocusEffect } from "@react-navigation/native"
 import { roomService } from "app/API/services/roomService"
-import { appUserUtils, KIND, User } from "app/API/types"
+import { appUserUtils, KIND, RoomMember, User } from "app/API/types"
 import { Message, Room } from "app/API/types/message.types"
 import { Text } from "app/components"
 import { useStomp } from "app/contexts/StompContext"
@@ -8,10 +8,11 @@ import { useStores } from "app/models"
 import { ChatBottomTabScreenProps } from "app/navigators/ChatNavigator"
 import { ChatScreenLayout } from "app/screens"
 import { colors } from "app/theme"
-import { imageRegistry } from "app/theme/images"
 import { observer } from "mobx-react-lite"
-import React, { FC, useCallback } from "react"
-import { Image, ImageStyle, TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
+import * as React from "react"
+import { FC, useCallback } from "react"
+import { TextStyle, TouchableOpacity, View, ViewStyle } from "react-native"
+import { Avatar } from "react-native-paper"
 
 type RecentRoomsScreenProps = ChatBottomTabScreenProps<"RecentRooms">
 export const RecentRoomsScreen: FC<RecentRoomsScreenProps> = observer(function RecentRoomsScreen(
@@ -20,7 +21,6 @@ export const RecentRoomsScreen: FC<RecentRoomsScreenProps> = observer(function R
   const {
     accountStore: { id: currentUserId },
   } = useStores()
-  const { avatarMock } = imageRegistry
   const { navigation } = _props
   const [rooms, setRooms] = React.useState<Room[]>([])
   const { subscribe, unsubscribe } = useStomp()
@@ -29,7 +29,7 @@ export const RecentRoomsScreen: FC<RecentRoomsScreenProps> = observer(function R
     if (room.name) {
       return room.name
     }
-    const friend: User | undefined = room.appUsers?.findLast((user) => user.id !== currentUserId)
+    const friend: User | undefined = room.roomMembers?.findLast((roomMember: RoomMember) => roomMember.member.id !== currentUserId)
     return friend ? appUserUtils.getName(friend) : ""
   }, [])
 
@@ -73,10 +73,10 @@ export const RecentRoomsScreen: FC<RecentRoomsScreenProps> = observer(function R
           rooms.map((room) => (
             <TouchableOpacity key={room.id} onPress={() => goChatRoom(room)}>
               <View style={$roomListItem}>
-                <Image source={avatarMock} style={$roomImage} />
+                <Avatar.Text label={room.name ?? ""} size={40} />
                 <View style={$roomDetails}>
                   <Text style={$roomName}>{getName(room)}</Text>
-                  <Text style={$latestMessage}>{room.lastMessage?.content}</Text>
+                  {room.lastMessage?.content && <Text style={$latestMessage}>{room.lastMessage?.content}</Text>}
                 </View>
               </View>
             </TouchableOpacity>
@@ -96,12 +96,6 @@ const $roomListItem: ViewStyle = {
   gap: 16,
   justifyContent: "flex-start",
   alignItems: "center",
-}
-
-const $roomImage: ImageStyle = {
-  resizeMode: "contain",
-  width: 44,
-  height: 44,
 }
 
 const $roomDetails: ViewStyle = {}

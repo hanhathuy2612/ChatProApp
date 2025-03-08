@@ -1,4 +1,4 @@
-import { NewRoom, Room } from "app/API/types/message.types"
+import { CreateRoomRequest, Room } from "app/API/types/message.types"
 import { ApiResponse } from "apisauce"
 import { KIND, BaseApiResponse, BaseData, DefaultApiResponse, Pagination } from "app/API/types/common.types"
 import { getGeneralApiProblem } from "app/API/apiProblem"
@@ -41,7 +41,7 @@ class RoomService extends Api {
     }
   }
 
-  create(room: NewRoom): Promise<ApiResponse<Room>> {
+  create(room: CreateRoomRequest): Promise<ApiResponse<Room>> {
     return this.apisauce.post<Room>(`api/rooms`, room)
   }
 }

@@ -47,7 +47,6 @@ export const DatabaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   return <DatabaseContext.Provider value={value}>{children}</DatabaseContext.Provider>
 }
 
-// Custom hook để sử dụng context
 export const useDatabaseContext = () => {
   const context = useContext(DatabaseContext)
   if (!context) {
