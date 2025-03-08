@@ -9,8 +9,8 @@ import { observer } from "mobx-react-lite"
 import React, { FC, useCallback, useMemo } from "react"
 import { View } from "react-native"
 import { ContactItem } from "./components/ContactItem/ContactItem"
-import { useContacts } from "./hooks"
-import { $styles } from "./styles"
+import { $styles } from "./contact.styles"
+import { useContacts } from "app/screens/ChatScreen/ContactsScreen/useContacts"
 
 export const ContactsScreen: FC<ChatBottomTabScreenProps<"Contacts">> = observer(
   function ContactsScreen({ navigation }) {

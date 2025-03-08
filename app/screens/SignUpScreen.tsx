@@ -1,17 +1,15 @@
 import React, { FC } from "react"
 import { observer } from "mobx-react-lite"
-// eslint-disable-next-line react-native/split-platform-components
 import { TextStyle, ToastAndroid, ViewStyle } from "react-native"
 import { AppStackScreenProps } from "app/navigators"
 import { Button, Screen, Text, TextField } from "app/components"
 import { spacing } from "app/theme"
 import { Controller, SubmitHandler, useForm } from "react-hook-form"
-import { accountService, SignupRequest } from "app/API/services/accountService"
+import { accountService } from "app/API/services/accountService"
 import PasswordField from "app/components/PasswordField"
+import { SignupRequest } from "app/API"
 
-
-interface SignUpScreenProps extends AppStackScreenProps<"SignUp"> {
-}
+type SignUpScreenProps = AppStackScreenProps<"SignUp">
 
 type SignUpForm = {
   username: string,

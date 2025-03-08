@@ -12,7 +12,7 @@ import { useSafeAreaInsetsStyle } from "../hooks/useSafeAreaInsetsStyle"
 const welcomeLogo = require("../../assets/images/logo.png")
 const welcomeFace = require("../../assets/images/welcome-face.png")
 
-interface WelcomeScreenProps extends AppStackScreenProps<"Welcome"> {}
+type WelcomeScreenProps = AppStackScreenProps<"Welcome">
 
 export const WelcomeScreen: FC<WelcomeScreenProps> = observer(function WelcomeScreen(_props) {
   const { navigation } = _props

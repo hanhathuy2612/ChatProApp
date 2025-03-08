@@ -2,7 +2,7 @@ import { User } from "app/API/types"
 import { imageRegistry } from "app/theme/images"
 import React, { FC } from "react"
 import { Image, Text, TouchableOpacity, View } from "react-native"
-import { $styles } from "./styles"
+import { $styles } from "./contactItem.styles"
 
 export const ContactItem: FC<{
   contact: User

@@ -6,7 +6,7 @@ import { colors, spacing, typography } from "app/theme"
 import { Icon, Text } from "app/components"
 import React from "react"
 import { TextStyle, ViewStyle } from "react-native"
-import { RecentRoomsScreen } from "app/screens/ChatScreen/RecentRoomsScreen"
+import { RecentRoomsScreen } from "app/screens/ChatScreen/RecentRoomsScreen/RecentRoomsScreen"
 import { ContactsScreen } from "app/screens"
 import { observer } from "mobx-react-lite"
 
