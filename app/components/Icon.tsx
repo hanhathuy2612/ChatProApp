@@ -111,6 +111,7 @@ export const iconRegistry = {
   lookup: require("../../assets/icons/lookup.png"),
   dialog: require("../../assets/icons/dialog.png"),
   bracketRight: require("assets/icons/bracketRight.png"),
+  videoCall: require("assets/icons/video-call.png"),
 }
 
 const $imageStyleBase: ImageStyle = {

@@ -10,10 +10,13 @@ import { FlatList, View } from "react-native"
 import { v4 as uuidv4 } from "uuid"
 import { $styles } from "./chatRoom.styles"
 import useChatRoom from "app/screens/ChatScreen/ChatRoomScreen/hooks/useChatRoom"
+import { useHeader } from "app/hooks/useHeader"
+import { colors } from "app/theme"
+import RightHeader from "app/screens/ChatScreen/ChatRoomScreen/components/RightHeader/RightHeader"
 
 export type ChatRoomScreenProps = AppStackScreenProps<"ChatRoom">
 
-export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoomScreen() {
+export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoomScreen({ navigation }) {
   const route = useRoute<RouteProp<AppStackParamList, "ChatRoom">>()
   const { roomId, title } = route.params
   const {
@@ -24,13 +27,23 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
     throw new Error("AccountId is required")
   }
 
+
+  useHeader({
+    title: title ?? "ChatRoom",
+    titleStyle: { color: colors.palette.neutral100 },
+    leftIcon: "back",
+    leftIconColor: colors.palette.neutral100,
+    onLeftPress: () => navigation.navigate("Chat", { screen: "RecentRooms" }),
+    RightActionComponent: <RightHeader roomId={roomId}/>,
+  }, [roomId])
+
   const {
     flatListRef,
     messages,
     sendMessage,
     scrollToBottom,
     debouncedTyping,
-  } = useChatRoom(accountId, roomId, title)
+  } = useChatRoom(accountId, roomId)
 
   const destination = `/chat/room/${roomId}`
 
