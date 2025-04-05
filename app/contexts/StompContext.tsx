@@ -4,9 +4,11 @@ import config from "app/config"
 import React, { createContext, useContext, useEffect, useMemo, useRef } from "react"
 import SockJS from "sockjs-client"
 import { useStores } from "app/models"
+import { CallMessage } from "app/API/types/call.types"
 
 type StompContextType = {
   sendMessage: (message: Message, destination: string) => void;
+  sendCallMessage: (message: CallMessage, destination: string) => void;
   subscribe: (url: string, callback: (message: Message) => void) => void;
   unsubscribe: (url: string) => void;
 };
@@ -82,6 +84,18 @@ export const StompProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }
 
+  const sendCallMessage = (message: CallMessage, destination: string) => {
+    if (clientRef.current?.connected) {
+      clientRef.current.publish({
+        destination, body: JSON.stringify(message), headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+    } else {
+      console.warn("⚠️ WebSocket not connected. Unable to send message.")
+    }
+  }
+
   const subscribe = (url: string, callback: CallbackMessage) => {
     if (!clientRef.current?.connected) {
       console.warn("⚠️ Cannot subscribe, WebSocket not connected.")
@@ -112,6 +126,7 @@ export const StompProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const contextValue = useMemo(
     () => ({
       sendMessage,
+      sendCallMessage,
       subscribe,
       unsubscribe,
     }),

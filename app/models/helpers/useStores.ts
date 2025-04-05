@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react"
-import { RootStore, RootStoreModel } from "../RootStore"
-import { setupRootStore } from "./setupRootStore"
+import { RootStore, RootStoreModel } from "app/models"
+import { setupRootStore } from "app/models"
 
 /**
  * Create the initial (empty) global RootStore instance here.

@@ -10,7 +10,7 @@
  * @refresh reset
  */
 import { applySnapshot, IDisposer, onSnapshot } from "mobx-state-tree"
-import { RootStore, RootStoreSnapshot } from "../RootStore"
+import { RootStore, RootStoreSnapshot } from "app/models"
 import * as storage from "../../utils/storage"
 
 /**
@@ -19,9 +19,10 @@ import * as storage from "../../utils/storage"
 const ROOT_STATE_STORAGE_KEY = "root-v1"
 
 /**
- * Setup the root state.
+ * Set up the root state.
  */
 let _disposer: IDisposer | undefined
+
 export async function setupRootStore(rootStore: RootStore) {
   let restoredState: RootStoreSnapshot | undefined | null
 

@@ -5,7 +5,20 @@ export type Message = {
   type?: keyof typeof ChatType
   content?: string
   sender?: User
-  room: Room
+  room?: Room
+}
+
+export type IceCandidateMessage = Message & {
+  candidate: RTCIceCandidate
+  type: ChatType.ICE_CANDIDATE
+}
+
+export type OfferMessage = Message & {
+  offer: RTCSessionDescriptionInit;
+}
+
+export type AnswerMessage = Message & {
+  answer: RTCSessionDescriptionInit;
 }
 
 export type Room = {
@@ -33,4 +46,7 @@ export enum ChatType {
   CONNECTED = "CONNECTED",
   DISCONNECTED = "DISCONNECTED",
   TYPING = "TYPING",
+  OFFER = "OFFER",
+  ICE_CANDIDATE = "ICE_CANDIDATE",
+  ANSWER = "ANSWER",
 }

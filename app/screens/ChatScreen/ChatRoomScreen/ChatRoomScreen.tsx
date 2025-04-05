@@ -27,7 +27,6 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
     throw new Error("AccountId is required")
   }
 
-
   useHeader({
     title: title ?? "ChatRoom",
     titleStyle: { color: colors.palette.neutral100 },
