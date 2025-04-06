@@ -109,7 +109,7 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
       
       {connectionStatus === "error" && (
         <View style={$styles.connectionError}>
-          <Text text={connectionError || "Lỗi kết nối"} style={$styles.errorText} />
+          <Text text={connectionError ?? "Lỗi kết nối"} style={$styles.errorText} />
         </View>
       )}
 

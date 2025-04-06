@@ -5,11 +5,8 @@
  * See the [Backend API Integration](https://docs.infinite.red/ignite-cli/boilerplate/app/services/#backend-api-integration)
  * documentation for more details.
  */
-import { ApiResponse, ApisauceConfig, ApisauceInstance, create } from "apisauce"
-import { getGeneralApiProblem } from "app/API/apiProblem"
-import { ApiFeedResponse } from "app/API/types"
+import { ApisauceConfig, create } from "apisauce"
 import { ACCESS_TOKEN } from "app/constants/key-stored.constant"
-import { EpisodeSnapshotIn } from "app/models/Episode"
 import { _rootStore } from "app/models/helpers/useStores"
 import { loadString } from "app/utils/storage"
 import config from "../config"
@@ -26,53 +23,56 @@ export const DEFAULT_API_CONFIG: ApisauceConfig = {
 }
 
 // A list of endpoints that don't require authentication
-const permitAllEndpoints = ["api/authenticate/login", "api/authenticate/refresh-token"]
-const isPermitAllEndpoint = (url: string) =>
-  permitAllEndpoints.some((endpoint) => url.includes(endpoint))
+const permitAllEndpoints = new Set(["api/authenticate/login", "api/authenticate/refresh-token"])
+const isPermitAllEndpoint = (url: string): boolean => 
+  Array.from(permitAllEndpoints).some(endpoint => url.includes(endpoint))
 
 /**
  * Manages all requests to the API.
  */
 export const defaultApiSauce = create(DEFAULT_API_CONFIG)
 
-// Add a request interceptor to add Authorization header
-defaultApiSauce.axiosInstance.interceptors.request.use(
-  async (config) => {
-    const token = await loadString(ACCESS_TOKEN)
-    if (token && !isPermitAllEndpoint(config.url!)) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-
-    return config
-  },
-  (error) => {
-    return Promise.reject(new Error(error))
-  },
-)
-
-// Add a response interceptor to handle token refreshing
+// For token refresh handling
 let isRefreshing = false
-let failedQueue: { resolve: (value: unknown) => void; reject: (reason?: unknown) => void }[] = []
+let failedQueue: Array<{
+  resolve: (value: unknown) => void
+  reject: (reason?: unknown) => void
+}> = []
 
-const processQueue = (error: Error | null, token: string | null = null) => {
-  failedQueue.forEach((promise) => {
+const processQueue = (error: Error | null, token: string | null = null): void => {
+  failedQueue.forEach(promise => {
     if (error) {
       promise.reject(error)
     } else {
       promise.resolve(token)
     }
   })
-
+  
   failedQueue = []
 }
 
+// Add a request interceptor to add Authorization header
+defaultApiSauce.axiosInstance.interceptors.request.use(
+  async (config) => {
+    const token = await loadString(ACCESS_TOKEN)
+    
+    if (token && config.url && !isPermitAllEndpoint(config.url)) {
+      config.headers.Authorization = `Bearer ${token}`
+    }
+
+    return config
+  },
+  (error) => Promise.reject(error)
+)
+
+// Add a response interceptor to handle token refreshing
 defaultApiSauce.axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config
-
+    
     // Prevent infinite loop for refresh token requests
-    if (originalRequest.url.includes("refresh-token") || originalRequest._retry) {
+    if (originalRequest.url?.includes("refresh-token") || originalRequest._retry) {
       return Promise.reject(new Error("Failed to refresh token"))
     }
 
@@ -84,12 +84,10 @@ defaultApiSauce.axiosInstance.interceptors.response.use(
           failedQueue.push({ resolve, reject })
         })
           .then((token) => {
-            originalRequest.headers["Authorization"] = `Bearer ${token}`
+            originalRequest.headers["Authorization"] = `Bearer ${token as string}`
             return defaultApiSauce.axiosInstance(originalRequest)
           })
-          .catch((err) => {
-            return Promise.reject(new Error(err))
-          })
+          .catch((err) => Promise.reject(err))
       }
 
       originalRequest._retry = true
@@ -107,80 +105,19 @@ defaultApiSauce.axiosInstance.interceptors.response.use(
           originalRequest.headers["Authorization"] = `Bearer ${newToken}`
           return defaultApiSauce.axiosInstance(originalRequest)
         } else {
-          processQueue(new Error("Failed to refresh token"))
-          return Promise.reject(new Error("Failed to refresh token"))
+          const error = new Error("Failed to refresh token")
+          processQueue(error)
+          return Promise.reject(error)
         }
       } catch (refreshError) {
-        processQueue(refreshError as Error)
-        return Promise.reject(new Error(refreshError as string))
+        const error = refreshError instanceof Error ? refreshError : new Error(String(refreshError))
+        processQueue(error)
+        return Promise.reject(error)
       } finally {
         isRefreshing = false
       }
     }
 
-    return Promise.reject(new Error(error))
+    return Promise.reject(error)
   },
 )
-
-/**
- * Manages all requests to the API. You can use this class to build out
- * various requests that you need to call from your backend API.
- */
-export class Api {
-  /**
-   * The underlying apisauce instance which performs the requests.
-   */
-  apisauce: ApisauceInstance
-
-  /**
-   * Configurable options.
-   */
-  config: ApisauceConfig
-
-  /**
-   * Creates the api.
-   *
-   * @param config The configuration to use.
-   */
-  constructor(config: ApisauceConfig = DEFAULT_API_CONFIG) {
-    this.config = config
-    this.apisauce = create(config)
-  }
-
-  /**
-   * Gets a list of recent React Native Radio episodes.
-   */
-  async getEpisodes(): Promise<{ kind: string; episodes?: EpisodeSnapshotIn[] }> {
-    // make the api call
-    const response: ApiResponse<ApiFeedResponse> = await this.apisauce.get(
-      `api.json?rss_url=https%3A%2F%2Ffeeds.simplecast.com%2FhEI_f9Dx`,
-    )
-
-    // the typical ways to die when calling an api
-    if (!response.ok) {
-      const problem = getGeneralApiProblem(response)
-      if (problem) return problem
-    }
-
-    // transform the data into the format we are expecting
-    try {
-      const rawData = response.data
-
-      // This is where we transform the data into the shape we expect for our MST model.
-      const episodes: EpisodeSnapshotIn[] =
-        rawData?.items?.map((raw) => ({
-          ...raw,
-        })) || []
-
-      return { kind: "ok", episodes }
-    } catch (e: unknown) {
-      if (__DEV__ && e instanceof Error) {
-        console.tron.error(`Bad data: ${e.message}\n${response.data}`, e.stack)
-      }
-      return { kind: "bad-data" }
-    }
-  }
-}
-
-// Singleton instance of the API for convenience
-export const api = new Api()

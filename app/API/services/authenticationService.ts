@@ -1,14 +1,14 @@
-import { Api } from "../api"
-import { getGeneralApiProblem } from "../apiProblem"
-import { BaseApiResponse, TokenResponse, KIND, LoginRequest } from "app/API"
-import { loadString } from "app/utils/storage"
+import { BaseApiResponse, KIND, LoginRequest, TokenResponse } from "app/API"
 import { REFRESH_TOKEN } from "app/constants/key-stored.constant"
+import { loadString } from "app/utils/storage"
+import { defaultApiSauce } from "../api"
+import { getGeneralApiProblem } from "../apiProblem"
 
-class AuthenticationService extends Api {
+class AuthenticationService {
   private readonly AUTH_URL = "api/authenticate"
 
   async login(req: LoginRequest): Promise<BaseApiResponse<TokenResponse>> {
-    const response = await this.apisauce.post<TokenResponse>(`${this.AUTH_URL}/login`, req, {
+    const response = await defaultApiSauce.post<TokenResponse>(`${this.AUTH_URL}/login`, req, {
       headers: {
         "Content-Type": "application/json",
       },
@@ -36,19 +36,19 @@ class AuthenticationService extends Api {
   async refreshToken(): Promise<BaseApiResponse<TokenResponse>> {
     try {
       const refreshToken = await loadString(REFRESH_TOKEN)
-      
+
       if (!refreshToken) {
         return { kind: KIND.UNAUTHORIZED }
       }
 
-      const response = await this.apisauce.post<TokenResponse>(
+      const response = await defaultApiSauce.post<TokenResponse>(
         `${this.AUTH_URL}/refresh-token`,
         { refreshToken },
         {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       )
 
       if (!response.ok) {

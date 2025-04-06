@@ -1,6 +1,6 @@
 import { ApiResponse } from "apisauce"
 import { Message } from "app/API/types"
-import { Api } from "../api"
+import { defaultApiSauce } from "../api"
 
 interface ChatMessageQuery {
   roomId: string
@@ -9,9 +9,9 @@ interface ChatMessageQuery {
   sort: string
 }
 
-class ChatMessageService extends Api {
+class ChatMessageService {
   query(req: ChatMessageQuery): Promise<ApiResponse<Message[]>> {
-    return this.apisauce.get<Message[]>(`api/chat-messages/room/${req.roomId}`, req)
+    return defaultApiSauce.get<Message[]>(`api/chat-messages/room/${req.roomId}`, req)
   }
 }
 

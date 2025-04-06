@@ -1,22 +1,22 @@
 import { ApiResponse } from "apisauce"
 import { SignupRequest, User } from "app/API/types"
-import { Api } from "../api"
+import { defaultApiSauce } from "../api"
 
-class AccountService extends Api {
+class AccountService {
   signup(req: SignupRequest) {
-    return this.apisauce.post(`api/account`, req)
+    return defaultApiSauce.post(`api/account`, req)
   }
 
   getContacts(): Promise<ApiResponse<User[]>> {
-    return this.apisauce.get<User[]>(`api/account/contacts`)
+    return defaultApiSauce.get<User[]>(`api/account/contacts`)
   }
 
   addContact(user: User) {
-    return this.apisauce.post<User[]>(`api/account/contacts`, user)
+    return defaultApiSauce.post<User[]>(`api/account/contacts`, user)
   }
 
   fetchAccount(): Promise<ApiResponse<User>> {
-    return this.apisauce.get<User>(`api/account`)
+    return defaultApiSauce.get<User>(`api/account`)
   }
 }
 
