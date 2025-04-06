@@ -19,9 +19,9 @@ export const useCallService = () => {
   const initializePeerConnection = () => {
     const pc = new RTCPeerConnection({
       iceServers: [
-        { urls: "stun:localhost:3478" },
+        { urls: "stun:192.168.1.68:3478" },
         {
-          urls: "turn:localhost:3478",
+          urls: "turn:192.168.1.68:3478",
           username: "username",
           credential: "password",
         },

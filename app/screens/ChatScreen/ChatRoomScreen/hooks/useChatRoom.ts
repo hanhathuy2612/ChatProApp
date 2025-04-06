@@ -1,32 +1,55 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useStomp } from "app/contexts/StompContext"
 import { useChatMessages } from "./useChatMessages"
 import { useChatTyping } from "./useChatTyping"
 import { Message } from "app/API"
+import { Alert } from "react-native"
 
 const useChatRoom = (
   accountId: string,
   roomId: string,
 ) => {
-  const { sendMessage, subscribe, unsubscribe } = useStomp()
+  const { sendMessage, subscribe, unsubscribe, connectionStatus, connectionError } = useStomp()
   const { messages, setMessages, flatListRef, fetchMessages, scrollToBottom } = useChatMessages(roomId)
   const { debouncedTyping } = useChatTyping(roomId, accountId, sendMessage)
+  const [isConnected, setIsConnected] = useState(false)
 
   const handleNewMessage = (newMessage: Message) => {
-    console.log("old messages: ", messages)
     setMessages((prev) => [...prev, newMessage])
     scrollToBottom()
   }
 
   useEffect(() => {
-    fetchMessages().then(() => {
-      subscribe(`/chat/user/${accountId}`, handleNewMessage)
-    })
+    let isMounted = true
+
+    const fetchAndSubscribe = async () => {
+      try {
+        if (isMounted) {
+          await fetchMessages()
+          if (connectionStatus === "connected") {
+            subscribe(`/chat/user/${accountId}`, handleNewMessage)
+            setIsConnected(true)
+          } else if (connectionStatus === "error") {
+            setIsConnected(false)
+            Alert.alert(
+              "Error connecting",
+              connectionError ?? "Cannot connect to chat server. Please try again later.",
+            )
+          }
+        }
+      } catch (error) {
+        console.error("Error in fetchAndSubscribe:", error)
+      }
+    }
+
+    fetchAndSubscribe()
+
     return () => {
+      isMounted = false
       unsubscribe(`/chat/user/${accountId}`)
       unsubscribe(`/chat/user/${accountId}/typing`)
     }
-  }, [roomId])
+  }, [roomId, connectionStatus])
 
   return {
     messages,
@@ -35,6 +58,9 @@ const useChatRoom = (
     debouncedTyping,
     sendMessage,
     scrollToBottom,
+    isConnected,
+    connectionStatus,
+    connectionError,
   }
 }
 

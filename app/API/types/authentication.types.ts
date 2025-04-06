@@ -1,8 +1,10 @@
-export type JWTToken = {
-  id_token: string
-}
-
 export type LoginRequest = {
   username: string
   password: string
+}
+
+export type TokenResponse = {
+  accessToken: string
+  refreshToken: string
+  expiresIn?: number
 }

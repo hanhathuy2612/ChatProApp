@@ -1,7 +1,8 @@
+import { Icon } from "app/components"
+import { useCallService } from "app/hooks/useCallService"
 import React from "react"
 import { TouchableOpacity, View } from "react-native"
-import { Icon } from "app/components"
-import { $styles } from "./rightHeader.styles"
+import { $styles } from "./RightHeader.styles"
 
 type RightHeaderProps = {
   roomId: string
@@ -9,9 +10,11 @@ type RightHeaderProps = {
 
 const RightHeader = (props: RightHeaderProps) => {
   const { roomId } = props
+  const { joinRoom } = useCallService()
 
   const startCall = (roomId: string) => {
-
+    console.log("Start call: ", roomId)
+    joinRoom(roomId)
   }
 
   const handleCallPress = () => {
@@ -22,8 +25,7 @@ const RightHeader = (props: RightHeaderProps) => {
   return (
     <View style={$styles.rightHeaderContainer}>
       <TouchableOpacity onPress={handleCallPress}>
-        <Icon icon={"videoCall"} size={34}
-              color="white" />
+        <Icon icon={"videoCall"} size={34} color="white" />
       </TouchableOpacity>
     </View>
   )

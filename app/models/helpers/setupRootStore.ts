@@ -30,6 +30,14 @@ export async function setupRootStore(rootStore: RootStore) {
     // load the last known state from AsyncStorage
     restoredState = ((await storage.load(ROOT_STATE_STORAGE_KEY)) ?? {}) as RootStoreSnapshot
     applySnapshot(rootStore, restoredState)
+    
+    // Attempt to restore authentication from AsyncStorage
+    await rootStore.authenticationStore.restoreAuth()
+    
+    // If authentication was restored successfully, fetch the user account
+    if (rootStore.authenticationStore.isAuthenticated) {
+      rootStore.accountStore.fetchAccount()
+    }
   } catch (e) {
     // if there's any problems loading, then inform the dev what happened
     if (__DEV__) {

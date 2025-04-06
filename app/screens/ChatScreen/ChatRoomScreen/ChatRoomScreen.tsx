@@ -5,10 +5,10 @@ import { AppInput } from "app/components/AppInput"
 import { useStores } from "app/models"
 import { AppStackParamList, AppStackScreenProps } from "app/navigators"
 import { observer } from "mobx-react-lite"
-import React, { FC, useCallback } from "react"
-import { FlatList, View } from "react-native"
+import React, { FC, useCallback, useEffect } from "react"
+import { FlatList, View, ActivityIndicator } from "react-native"
 import { v4 as uuidv4 } from "uuid"
-import { $styles } from "./chatRoom.styles"
+import { $styles } from "./ChatRoomScreen.styles"
 import useChatRoom from "app/screens/ChatScreen/ChatRoomScreen/hooks/useChatRoom"
 import { useHeader } from "app/hooks/useHeader"
 import { colors } from "app/theme"
@@ -21,6 +21,7 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
   const { roomId, title } = route.params
   const {
     accountStore: { id: accountId },
+    authenticationStore,
   } = useStores()
 
   if (!accountId) {
@@ -42,6 +43,9 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
     sendMessage,
     scrollToBottom,
     debouncedTyping,
+    connectionStatus,
+    connectionError,
+    isConnected,
   } = useChatRoom(accountId, roomId)
 
   const destination = `/chat/room/${roomId}`
@@ -81,6 +85,14 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
     debouncedTyping(text)
   }
 
+  useEffect(() => {
+    if (connectionStatus === "error" && connectionError?.includes("Token đã hết hạn")) {
+      setTimeout(() => {
+        authenticationStore.logout()
+      }, 2000)
+    }
+  }, [connectionStatus, connectionError])
+
   return (
     <Screen
       style={$styles.root}
@@ -88,6 +100,19 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
       preset="fixed"
       keyboardOffset={85}
     >
+      {connectionStatus === "connecting" && (
+        <View style={$styles.connectionIndicator}>
+          <ActivityIndicator size="small" color={colors.palette.accent500} />
+          <Text text="Đang kết nối..." style={$styles.connectionText} />
+        </View>
+      )}
+      
+      {connectionStatus === "error" && (
+        <View style={$styles.connectionError}>
+          <Text text={connectionError || "Lỗi kết nối"} style={$styles.errorText} />
+        </View>
+      )}
+
       <FlatList
         ref={flatListRef}
         style={$styles.messageFlatList}
@@ -112,6 +137,7 @@ export const ChatRoomScreen: FC<ChatRoomScreenProps> = observer(function ChatRoo
           multiline={true}
           onSendPress={handleSendPress}
           onTyping={handleTyping}
+          disabled={!isConnected}
         />
       </View>
     </Screen>
