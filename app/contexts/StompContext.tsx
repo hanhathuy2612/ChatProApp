@@ -72,7 +72,7 @@ export const StompProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [token])
 
   const handleTokenError = async (errorMsg: string) => {
-    console.error("Token error detected:", errorMsg)
+    console.trace("Token error detected:", errorMsg)
 
     if (
       errorMsg.includes("JWT expired") ||

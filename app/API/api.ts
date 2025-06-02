@@ -97,6 +97,7 @@ defaultApiSauce.axiosInstance.interceptors.response.use(
         // Get the root store and attempt to refresh the token
         const rootStore = _rootStore
         const authStore = rootStore.authenticationStore
+        console.trace("Refreshing token")
         const success = await authStore.refreshAuthToken()
 
         if (success) {

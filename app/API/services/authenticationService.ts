@@ -36,11 +36,11 @@ class AuthenticationService {
   async refreshToken(): Promise<BaseApiResponse<TokenResponse>> {
     try {
       const refreshToken = await loadString(REFRESH_TOKEN)
+      console.log("refreshToken", refreshToken)
 
       if (!refreshToken) {
         return { kind: KIND.UNAUTHORIZED }
       }
-
       const response = await defaultApiSauce.post<TokenResponse>(
         `${this.AUTH_URL}/refresh-token`,
         { refreshToken },
